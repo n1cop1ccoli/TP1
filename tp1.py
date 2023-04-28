@@ -1,42 +1,98 @@
 import getpass
 
 def inicialization():
-    global user, password, count, type_user, admin
-    user = "admin"
-    password= 12345
-    count = 0   
+    global USER, PASSWORD, count, type_user, admin, menu_admin
+    USER = "admin"
+    PASSWORD= 12345
+    count = 3
+    # 0: no logueado
+    # 1: Admin
+    # 2: Cliente
+    # 3: Salir   
     type_user = 0
     admin = False
+    menu_admin = 6
     
 def validation():
-    global user, password, count,admin
-    while (count < 3):
+    global USER, PASSWORD, count,admin
+    while (count > 0):
         user_vd = input("\nIngrese su usuario: ")
-        password_vd = int(getpass.getpass("Ingrese su contraseña: "))
-        if (user != user_vd or password != password_vd) and (count < 2):
-            print("\nEl usuario o contraseña son incorrectos vuelva a intentarlo\n")
-        if (user == user_vd and password == password_vd):
-            count = count + 3
+        try:
+            password_vd = int(getpass.getpass("Ingrese su contraseña: "))
+        except:
+            print("Please enter a number.. hijo de puta")
+        if (user_vd != USER or password_vd != PASSWORD):
+            if count == 1:
+                count = count - 1
+                print("\nUsted ya alcanzo el limite de intentos, lo sentimos el programa se ha cerrado")
+            else:
+                count = count - 1
+                print(f"\nEl usuario o contraseña son incorrectos le quedan {count} intentos.\n")
+        elif (user_vd == USER or password_vd == PASSWORD):
+            count = 0
             admin = True
-        if (count == 2):
-         print("\nUsted ya alcanzo el limete de intentos, lo sentimos el programa se ha cerrado")
-        count = count + 1
 
 def menu():
-    print("\n 1. Gestión de locales\n 2. Crear cuentas de dueños de locales\n 3. Aprobar / Denegarsolicitud de descuento\n 4. Gestión de Novedades\n 5. Reporte de utilización de descuentos\n 0. Salir\n")
-    
+    global admin, menu_admin
+    match menu_admin:
+        case 0:
+            print("fuiste..se cerro el programa")
+            admin = False
+        case 1:
+            print("\na) Crear locales \nb) Modificar local \nc) Eliminar local \nd) Volver\n")
+            back = input("\n Ingrese sector de menu: ")
+            if back == "d":
+                menu_admin = 6
+        case 2:
+            print("En construccion...")
+            try:
+                menu_admin = int(input("Ingrese 6 para volver: "))
+            except:
+                print("Please enter a number.. hijo de puta")
+        case 3:
+            print("En construccion...")
+            try:
+                menu_admin = int(input("Ingrese 6 para volver: "))
+            except:
+                print("Please enter a number.. hijo de puta")
+        case 4:
+            print("\na) Crear novedades \nb) Modificar novedad \nc) Eliminar novedad \nd) Ver reporte de novedades \ne) Volver\n")
+            back = input("\n Ingrese sector de menu: ")
+            if type(int(back)) == int:
+                print("\nPlease enter a letter.. hijo de puta")
+                back = input("\n Ingrese sector de menu: ")
+            elif back == "e":
+                menu_admin = 6
+        case 5:
+            print("En construccion...")
+            try:
+                menu_admin = int(input("Ingrese 6 para volver: "))
+            except:
+                print("Please enter a number.. hijo de puta")
+        case 6:
+            print("\n 1. Gestión de locales\n 2. Crear cuentas de dueños de locales\n 3. Aprobar / Denegar solicitud de descuento\n 4. Gestión de Novedades\n 5. Reporte de utilización de descuentos\n 0. Salir\n")
+            try:
+                menu_admin = int(input("\n Ingrese sector de menu: "))
+            except:
+                print("Please enter a number.. hijo de puta")
 
 inicialization()
 while(type_user == 0):
-    print("1 si es administrador  \n2 cliente \n3 salir")
-    type_user = int(input("Ingrese el tipo de usuario: "))
-    if (type_user== 2):
-        type_user = int(input("Esta seccion se encuentra en contruccion, presione 0 para volver: "))
-    if (type_user == 1):
-        validation()
-    if(type_user == 3):
-        print("se cerro")
+    print("1 Administrador  \n2 Cliente")
+    try:
+        type_user = int(input("Ingrese el tipo de usuario o presione 3 para salir: "))
+    except:
+        print("Te dije que pongas 3.. hijo de puta")
+    match type_user:
+        case 1:
+            validation()
+        case 2:
+            try:
+              type_user = int(input("Esta seccion se encuentra en contruccion, presione 0 para volver: "))
+            except:
+                print("Te dije que pongas 0.. hijo de puta")
+        case 3:
+            print("fuiste..se cerro el programa")
 
-if (admin == True):
+while (admin == True):
     menu()
-    

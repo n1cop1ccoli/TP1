@@ -9,7 +9,7 @@ def inicialization():
     # 1: Admin
     # 2: Cliente
     # 3: Salir   
-    type_user = "notAuth"
+    type_user = "0"
     admin = False
     menu_admin = "6"
     #count_1 = indumentaria
@@ -74,7 +74,7 @@ def comparison_may():
     elif(count_1 == count_3):
         print(f"\nLos rubros que mayor cantidad de locales tienen son indumentaria con {count_1} y comida con {count_3} cantidad de locales")
 
-#Funcion que devuelve el rubro que manor cantidad de locales posee
+#Funcion que devuelve el rubro que menor cantidad de locales posee
 def comparison_men():
     global count_1, count_2, count_3
     if (count_1 < count_2 and count_1 < count_3):
@@ -131,7 +131,7 @@ def menu():
                 menu_admin = "6"
             else:
                 print("En construccion")
-                menu_admin = input("Ingrese 4 para volver: ")             
+                menu_admin = input("Ingrese 6 para volver: ")             
         case "5":
              print("En construccion...")
              menu_admin = input("Ingrese 6 para volver: ")
@@ -143,7 +143,7 @@ def menu():
     
 #Programa principal
 inicialization()
-while(type_user == "notAuth"):
+while(type_user == "0"):
     print("1) Administrador  \n2) Cliente")
     type_user = input("Ingrese el tipo de usuario o presione 3 para salir: ")
     match type_user:

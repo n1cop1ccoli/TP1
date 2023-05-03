@@ -18,6 +18,8 @@ def inicialization():
     count_1 = 0
     count_2 = 0
     count_3 = 0
+def separation():
+    print("-------------------------------------------------------------------------------------------------------------")    
     
 def validation():
     global USER, PASSWORD, count,admin
@@ -27,17 +29,23 @@ def validation():
         if (user_vd != USER or password_vd != PASSWORD):
             if count == 1:
                 count = count - 1
-                print("\nUsted ya alcanzo el limite de intentos, lo sentimos el programa se ha cerrado")
+                separation()
+                print("\nUsted ya alcanzo el limite de intentos, lo sentimos el programa se ha cerrado\n")
+                separation()
             else:
                 count = count - 1
-                print(f"\nEl usuario o contraseña son incorrectos le quedan {count} intentos.")
+                separation()
+                print(f"\nEl usuario o contraseña son incorrectos le quedan {count} intentos.\n")
+                separation()
         elif (user_vd == USER or password_vd == PASSWORD):
             count = 0
             admin = True
 #Funcion que crea los locales y aumenta el contador dependiendo de su rubro
 def createShop():
     global count_1, count_2, count_3
+    separation()
     count_shop = int(input("Ingresar cantidad de locales a registrar o 0 para salir: "))
+    separation()
     while count_shop > 0:
         nameShop = input("Ingresar nombre del local: ")
         locationShop = input("Ingresar localizacion del local: ")
@@ -53,7 +61,9 @@ def createShop():
             case "3":
                 count_3=count_3 + 1
                 categoryShop="Comida"
+        separation()
         print(f"\nNombre del local: {nameShop}\nLocalizacion del local: {locationShop}\nRubro del local: {categoryShop}")
+        separation()
         if count_shop == 1:
             count_shop = int(input("\nEs el ultimo local a registrar, si quiere ingresar mas locales coloque la cantidad sino coloque 0 para salir: "))+1
         count_shop = count_shop - 1
@@ -92,8 +102,10 @@ def comparison_men():
 
 def shop():
     global menu_admin
+    separation()
     comparison_may()
     comparison_men()
+    separation()
     print("\na) Crear locales \nb) Modificar local \nc) Eliminar local \nd) Volver\n")
     #Usamos la variable local shop_menu para determinar a que seccion del menu ingresar
     shop_menu = input("\nIngrese sector de menu: ")
@@ -102,9 +114,11 @@ def shop():
            createShop()
            menu_admin = "1"
         case "b":
+            separation()
             print("En construccion...")
             menu_admin=input("\nIngresar 6 para volver: ")
         case "c":
+            separation()
             print("En construccion...")
             menu_admin=input("\nIngresar 6 para volver: ")
         case "d":
@@ -114,28 +128,35 @@ def menu():
     global admin, menu_admin
     match menu_admin:
         case "0":
+            separation()
             print("Saliste del programa.")
             admin = False
         case "1":
            shop()
         case "2":
+            separation()
             print("En construccion...")
             menu_admin = input("Ingrese 6 para volver: ")
         case "3":
+            separation()
             print("En construccion...")
             menu_admin = input("Ingrese 6 para volver: ")
         case "4":
+            separation()
             print("\na) Crear novedades \nb) Modificar novedad \nc) Eliminar novedad \nd) Ver reporte de novedades \ne) Volver")
             back = input("\nIngrese sector de menu: ")
             if back == "e":
                 menu_admin = "6"
             else:
+                separation()
                 print("En construccion")
                 menu_admin = input("Ingrese 6 para volver: ")             
         case "5":
+             separation()
              print("En construccion...")
              menu_admin = input("Ingrese 6 para volver: ")
         case "6":
+            separation()
             print("\n 1) Gestión de locales\n 2) Crear cuentas de dueños de locales\n 3) Aprobar / Denegar solicitud de descuento\n 4) Gestión de Novedades\n 5) Reporte de utilización de descuentos\n 0) Salir")
             menu_admin = input("\nIngrese sector de menu: ")
         case other:
@@ -150,8 +171,11 @@ while(type_user == "0"):
         case "1":
             validation()
         case "2":
-            type_user = input("Esta seccion se encuentra en contruccion, presione 0 para volver: ")
+            separation()
+            type_user = input("\nEsta seccion se encuentra en contruccion, presione 0 para volver: ")
+            separation()
         case "3":
+            separation()
             print("Saliste del programa.")
 
 while (admin == True):

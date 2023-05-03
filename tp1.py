@@ -51,6 +51,8 @@ def createShop():
         locationShop = input("Ingresar localizacion del local: ")
         print("\n1) Indumentaria \n2) Perfumeria \n3) Comida")
         categoryShop = input("Ingresar numero del rubro del local: ")
+        if categoryShop != "1" and categoryShop != "2" and categoryShop != "3":
+            categoryShop=input("\nIngrese una de las opciones validas:")
         match categoryShop:
             case "1":
                 count_1=count_1 + 1
@@ -109,6 +111,8 @@ def shop():
     print("\na) Crear locales \nb) Modificar local \nc) Eliminar local \nd) Volver\n")
     #Usamos la variable local shop_menu para determinar a que seccion del menu ingresar
     shop_menu = input("\nIngrese sector de menu: ")
+    if shop_menu != "a" and shop_menu != "b" and shop_menu != "c" and shop_menu != "d":
+        shop_menu=input("\nIngrese una de las opciones validas:")
     match shop_menu:
         case "a":
            createShop()
@@ -126,6 +130,8 @@ def shop():
 
 def menu():
     global admin, menu_admin
+    if menu_admin != "0" and menu_admin != "1" and menu_admin != "2" and menu_admin != "3" and menu_admin != "4" and menu_admin != "5" and menu_admin != "6":
+        menu_admin=input("\nIngrese una de las opciones validas:")
     match menu_admin:
         case "0":
             separation()
@@ -159,14 +165,14 @@ def menu():
             separation()
             print("\n 1) Gestión de locales\n 2) Crear cuentas de dueños de locales\n 3) Aprobar / Denegar solicitud de descuento\n 4) Gestión de Novedades\n 5) Reporte de utilización de descuentos\n 0) Salir")
             menu_admin = input("\nIngrese sector de menu: ")
-        case other:
-            menu_admin=input("\nIngrese una de las opciones validas:")
     
 #Programa principal
 inicialization()
 while(type_user == "0"):
     print("1) Administrador  \n2) Cliente")
     type_user = input("Ingrese el tipo de usuario o presione 3 para salir: ")
+    while(type_user != "1" and type_user != "2" and type_user != "3" and type_user != "0"):
+        type_user=input("\nIngrese una de las opciones validas:")
     match type_user:
         case "1":
             validation()

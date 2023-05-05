@@ -27,7 +27,7 @@ def separation():
 def validation():
     global USER, PASSWORD, count,admin
     while (count > 0):
-        user_vd = input("\nIngrese su usuario: ").lower()
+        user_vd = input("Ingrese su usuario: ").lower()
         password_vd = getpass.getpass("Ingrese su contraseña: ")
         if (user_vd != USER or password_vd != PASSWORD):
             if count == 1:
@@ -122,7 +122,7 @@ def shop():
     comparison_may()
     comparison_men()
     separation()
-    print("\na) Crear locales \nb) Modificar local \nc) Eliminar local \nd) Volver\n")
+    print("\na) Crear locales \nb) Modificar local \nc) Eliminar local \nd) Volver")
     shop_menu = input("\nIngrese sector de menu: ")
     while shop_menu != "a" and shop_menu != "b" and shop_menu != "c" and shop_menu != "d":
         shop_menu=input("\nIngrese una de las opciones validas:")
@@ -141,16 +141,20 @@ def shop():
         case "d":
             menu_admin = "6"
             
-#       
+#Procedimiento que muestra el menu para administrar las novedades
 def news():
- print("\na) Crear novedades \nb) Modificar novedad \nc) Eliminar novedad \nd) Ver reporte de novedades \ne) Volver")
- aux = input("\nIngrese sector de menu: ")
- if aux == "e":
-    menu_admin = "6"
- else:
+    global menu_admin
     separation()
-    print("En construccion")
-    menu_admin = input("Ingrese 6 para volver: ")
+    print("\na) Crear novedades \nb) Modificar novedad \nc) Eliminar novedad \nd) Ver reporte de novedades \ne) Volver")
+    aux = input("\nIngrese sector de menu: ")
+    while aux != "a" and aux != "b" and aux != "c" and aux != "d" and aux != "e":
+        aux = input("Ingresar un valor valido: ")
+    if aux == "e":
+        menu_admin = "6"
+    else:
+        separation()
+        print("En construccion.")
+        menu_admin = input("Ingrese 4 para volver: ")
                 
                 
 #Procedimiento que muestra el menu de administrador.
@@ -174,9 +178,7 @@ def menu():
             print("En construccion...")
             menu_admin = input("Ingrese 6 para volver: ")
         case "4":
-            separation()
             news()
-                         
         case "5":
              separation()
              print("En construccion...")
@@ -198,8 +200,8 @@ while(type_user == "0"):
             validation()
         case "2":
             separation()
-            type_user = input("\nEsta seccion se encuentra en contruccion, presione 0 para volver: ")
-            separation()
+            input("Esta seccion se encuentra en contruccion, ingrese cualquier tecla para volver: ")
+            type_user="0"
         case "3":
             separation()
             print("Saliste del programa.")

@@ -1,23 +1,25 @@
 import getpass
+import os
+
 #Variables utilizadas globalmente en todo el programa.
 def inicialization():
     global USER, PASSWORD, count, type_user, admin, menu_admin, count_1, count_2, count_3
-    USER = "admin@shopping.com"
+    USER = "admin"
     PASSWORD= "12345"
     count = 3  
-    # 0: no logueado
-    # 1: Admin
-    # 2: Cliente
-    # 3: Salir   
-    type_user = "0"
+    type_user = "notAuth"
     admin = False
     menu_admin = "6"
-    #count_1 = indumentaria
-    #count_2 = perfumeria
-    #count_3 = comida
     count_1 = 0
     count_2 = 0
     count_3 = 0
+
+#Procedimieno que dependiendo del sistema operativo limpia la terminal
+def cleanWindow():
+    if os.name == "nt":
+        os.system("cls")
+    else:
+        os.system("clear")
 
 #Procedimiento utilizado para separar contenidos del programa.  
 def separation():
@@ -25,7 +27,7 @@ def separation():
 
 #Procedimiento para validar el usuario y contraseña, y verificar cantidad de intentos.
 def validation():
-    global USER, PASSWORD, count,admin
+    global USER, PASSWORD, count,admin, type_user
     while (count > 0):
         user_vd = input("Ingrese su usuario: ").lower()
         password_vd = getpass.getpass("Ingrese su contraseña: ")
@@ -41,21 +43,15 @@ def validation():
                 print(f"\nEl usuario o contraseña son incorrectos le quedan {count} intentos.\n")
                 separation()
         elif (user_vd == USER or password_vd == PASSWORD):
-            count = 0
-            admin = True
+           count = 0
+           menu()
 
 #Procedimiento que crea los locales y aumenta el contador dependiendo de su rubro
 def createShop():
     global count_1, count_2, count_3
     separation()
-    try:
-        count_shop = int(input("Ingresar cantidad de locales a registrar o 0 para salir: "))
-    except:
-        print("Ingresar un valor valido")
-        createShop()
-    separation()
-    while count_shop > 0:
-        nameShop = input(f"Ingresar nombre del local {count_shop}: ")
+    nameShop = input(f"Ingresar nombre del local o * para culminar: ")
+    while nameShop != '*':
         locationShop = input("Ingresar localizacion del local: ")
         print("\n1) Indumentaria \n2) Perfumeria \n3) Comida")
         categoryShop = input("Ingresar numero del rubro del local: ")
@@ -74,14 +70,8 @@ def createShop():
         separation()
         print(f"\nNombre del local: {nameShop}\nLocalizacion del local: {locationShop}\nRubro del local: {categoryShop}")
         separation()
-        while count_shop == 1:
-            try:
-                count_shop = int(input("\nEs el ultimo local a registrar, si quiere ingresar mas locales coloque la cantidad sino coloque 0 para salir: "))
-                if count_shop != 0:
-                    count_shop = count_shop + 1
-            except:
-                print("Ingresa un valor valido")
-        count_shop = count_shop - 1
+        nameShop = input(f"Ingresar nombre del local o * para culminar: ")
+    cleanWindow()
 
 #Procedimiento que exhibe el o los rubros que mayor cantidad de locales posee
 def comparison_may():
@@ -92,6 +82,8 @@ def comparison_may():
         print(f"\nEl rubro que mayor cantidad de locales tiene es perfumeria con {count_2} cantidad de locales")
     elif(count_3 > count_1 and count_3 > count_2):
         print(f"\nEl rubro que mayor cantidad de locales tiene es comida con {count_3} cantidad de locales")
+    elif(count_1 == count_2 and count_3 == count_1):
+        print(f"\nLos rubros tienen la misma cantidad de locales con {count_1} cantidad de locales")
     elif(count_1 == count_2):
         print(f"\nLos rubros que mayor cantidad de locales tienen son indumentaria con {count_1} y perfumeria con {count_2} cantidad de locales")
     elif(count_2 == count_3):
@@ -133,13 +125,13 @@ def shop():
         case "b":
             separation()
             print("En construccion...")
-            menu_admin=input("\nIngresar 6 para volver: ")
+            menu_admin="1"
         case "c":
             separation()
             print("En construccion...")
-            menu_admin=input("\nIngresar 6 para volver: ")
+            menu_admin="1"
         case "d":
-            menu_admin = "6"
+            cleanWindow()
             
 #Procedimiento que muestra el menu para administrar las novedades
 def news():
@@ -150,50 +142,49 @@ def news():
     while aux != "a" and aux != "b" and aux != "c" and aux != "d" and aux != "e":
         aux = input("Ingresar un valor valido: ")
     if aux == "e":
-        menu_admin = "6"
+        cleanWindow()
     else:
         separation()
         print("En construccion.")
-        menu_admin = input("Ingrese 4 para volver: ")
+        menu_admin="4"
                 
                 
 #Procedimiento que muestra el menu de administrador.
 def menu():
     global admin, menu_admin
-    while menu_admin != "0" and menu_admin != "1" and menu_admin != "2" and menu_admin != "3" and menu_admin != "4" and menu_admin != "5" and menu_admin != "6":
-        menu_admin=input("\nIngrese una de las opciones validas:")
-    match menu_admin:
-        case "0":
-            separation()
-            print("Saliste del programa.")
-            admin = False
-        case "1":
-           shop()
-        case "2":
-            separation()
-            print("En construccion...")
-            menu_admin = input("Ingrese 6 para volver: ")
-        case "3":
-            separation()
-            print("En construccion...")
-            menu_admin = input("Ingrese 6 para volver: ")
-        case "4":
-            news()
-        case "5":
-             separation()
-             print("En construccion...")
-             menu_admin = input("Ingrese 6 para volver: ")
-        case "6":
-            separation()
-            print("\n 1) Gestión de locales\n 2) Crear cuentas de dueños de locales\n 3) Aprobar / Denegar solicitud de descuento\n 4) Gestión de Novedades\n 5) Reporte de utilización de descuentos\n 0) Salir")
-            menu_admin = input("\nIngrese sector de menu: ")
+    while menu_admin != "0":
+        print("\n 1) Gestión de locales\n 2) Crear cuentas de dueños de locales\n 3) Aprobar / Denegar solicitud de descuento\n 4) Gestión de Novedades\n 5) Reporte de utilización de descuentos\n 0) Salir")
+        menu_admin = input("\nIngrese sector de menu: ")
+        while menu_admin != "0" and menu_admin != "1" and menu_admin != "2" and menu_admin != "3" and menu_admin != "4" and menu_admin != "5" and menu_admin != "6":
+            menu_admin=input("\nIngrese una de las opciones validas:")
+        match menu_admin:
+            case "0":
+                separation()
+                print("Saliste del programa.")
+            case "1":
+                shop()
+            case "2":
+                cleanWindow()
+                print("En construccion...")
+                separation()
+            case "3":
+                cleanWindow()
+                print("En construccion...")
+                separation()
+            case "4":
+                news()
+            case "5":
+                cleanWindow()
+                print("En construccion...")
+                separation()
+            
     
 #Programa principal
 inicialization()
-while(type_user == "0"):
+while(type_user == "notAuth"):
     print("1) Administrador  \n2) Cliente")
-    type_user = input("Ingrese el tipo de usuario o presione 3 para salir: ")
-    while(type_user != "1" and type_user != "2" and type_user != "3" and type_user != "0"):
+    type_user = input("Ingrese el tipo de usuario o presione 0 para salir: ")
+    while(type_user != "1" and type_user != "2" and type_user != "0"):
         type_user=input("\nIngrese una de las opciones validas:")
     match type_user:
         case "1":
@@ -201,10 +192,7 @@ while(type_user == "0"):
         case "2":
             separation()
             input("Esta seccion se encuentra en contruccion, ingrese cualquier tecla para volver: ")
-            type_user="0"
-        case "3":
+            type_user="notAuth"
+        case "0":
             separation()
             print("Saliste del programa.")
-
-while (admin == True):
-    menu()

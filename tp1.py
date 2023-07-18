@@ -3,15 +3,17 @@ import os
 
 #Variables utilizadas globalmente en todo el programa.
 def inicialization():
-    global USER, PASSWORD, count, type_user, menu_admin, count_1, count_2, count_3, USERS
+    global USER, PASSWORD, count, type_user, menu_admin, count_1, count_2, count_3, USERS, opcion_owner, opcion_customer
     USERS = [["1","4","6","9"],["admin","localA","localB","cliente"],["12345","AAAA1111","BBBB2222","33xx33"],["administrador","dueñoLocal","dueñoLocal","cliente"]]
     count = 3
     type_user = "notAuth"
-    menu_admin = "6"
+    opcion_owner= "1"
+    opcion_customer= "1"
+    menu_admin = "1"
     count_1 = 0
     count_2 = 0
     count_3 = 0
-
+    
 #Procedimieno que dependiendo del sistema operativo limpia la terminal
 def cleanWindow():
     if os.name == "nt":
@@ -23,24 +25,40 @@ def cleanWindow():
 def separation():
     print("-------------------------------------------------------------------------------------------------------------")
 
+def current_menu(typeUser):
+    if(typeUser == "1"):
+        print("> MENU ADMINISTRADOR <")
+    if(typeUser == "2"):
+        print("> MENU DUEÑO LOCAL <")
+    if(typeUser == "3"):
+        print("> MENU CLIENTE <")
+
 #Procedimiento para validar el usuario y contraseña, y verificar cantidad de intentos.
 def validation(typeUser):
     global USERS,USER,PASSWORD,count,type_user
+    cleanWindow()
     while (count > 0):
+        current_menu(typeUser)
         user_vd = input("Ingrese su usuario: ")
-        password_vd = input("Ingrese su contraseña: ")
+        password_vd = getpass.getpass("Ingrese su contraseña: ")
         match typeUser:
             case "1":
                 if(user_vd == USERS[1][0] and password_vd == USERS[2][0]):
+                    cleanWindow()
+                    current_menu("1")
                     menu()
                     count = 0
             case "2":
                 if(user_vd == USERS[1][1] and password_vd == USERS[2][1] or user_vd == USERS[1][2] and password_vd == USERS[2][2]):
-                    print("Ingresaste dueño local")
+                    cleanWindow()
+                    current_menu("2")
+                    menu_owner()
                     count = 0
             case "3":
                 if(user_vd == USERS[1][3] and password_vd == USERS[2][3]):
-                    print("Ingresaste como cliente")
+                    cleanWindow()
+                    current_menu("3")
+                    menu_customer()
                     count = 0
         if (count != 0):
              if count == 1:
@@ -57,6 +75,8 @@ def validation(typeUser):
 #Procedimiento que crea los locales y aumenta el contador dependiendo de su rubro
 def createShop():
     global count_1, count_2, count_3
+    cleanWindow()
+    current_menu("1")
     separation()
     nameShop = input(f"Ingresar nombre del local o * para culminar: ")
     while nameShop != '*':
@@ -118,27 +138,32 @@ def comparison_men():
 #Procedimiento que muestra el menu de administrar locales y muestra el o los rubros que mayor y menor cantidad de locales tienen.
 def shop():
     global menu_admin
+    current_menu("1")
     separation()
     comparison_may()
     comparison_men()
     separation()
     print("\na) Crear locales \nb) Modificar local \nc) Eliminar local \nd) Mapa de locales \ne) Volver")
     shop_menu = input("\nIngrese sector de menu: ")
-    while shop_menu != "a" and shop_menu != "b" and shop_menu != "c" and shop_menu != "e":
+    while shop_menu != "a" and shop_menu != "b" and shop_menu != "c" and shop_menu != "e" and shop_menu != "d":
         shop_menu=input("\nIngrese una de las opciones validas:")
     match shop_menu:
         case "a":
+           cleanWindow()
            createShop()
            menu_admin = "1"
         case "b":
+            cleanWindow()
             separation()
             print("En construccion...")
             menu_admin="1"
         case "c":
+            cleanWindow()
             separation()
             print("En construccion...")
             menu_admin="1"
         case "d":
+            cleanWindow()
             print("mapardo")
         case "e":
             cleanWindow()
@@ -146,6 +171,7 @@ def shop():
 #Procedimiento que muestra el menu para administrar las novedades
 def news():
     global menu_admin
+    current_menu("1")
     separation()
     print("\na) Crear novedades \nb) Modificar novedad \nc) Eliminar novedad \nd) Ver reporte de novedades \ne) Volver")
     aux = input("\nIngrese sector de menu: ")
@@ -154,9 +180,81 @@ def news():
     if aux == "e":
         cleanWindow()
     else:
+        cleanWindow()
         separation()
         print("En construccion.")
         menu_admin="4"
+
+def menu_customer():
+    global opcion_customer
+    while opcion_customer != "0":
+        print("\n1) Registrarme \n2) Buscar descuentos en locales \n3) Solicitar descuento \n4) Ver novedades \n0) Salir")
+        opcion_customer = input("\nIngrese sector de menu: ")
+        while opcion_customer != "0" and opcion_customer != "1" and opcion_customer != "2" and opcion_customer != "3" and opcion_customer != "4":
+            opcion_customer=input("\nIngrese una de las opciones validas:")
+        match opcion_customer:
+            case "0":
+                cleanWindow()
+                separation()
+                print("Saliste del programa.")
+            case "1":
+                cleanWindow()
+                print("En construccion...")
+                separation()
+            case "2":
+                cleanWindow()
+                print("En construccion...")
+                separation()
+            case "3":
+                cleanWindow()
+                print("En construccion...")
+                separation()
+            case "4":
+                cleanWindow()
+                print("En construccion...")
+                separation()
+
+#Procedimeinto que muestra el menu para dueño de local
+def menu_owner():
+    global opcion_owner
+    while opcion_owner != "0" and opcion_owner != "d":
+        print("\n1) Gestión de Descuentos \n  a) Crear descuento para mi local \n  b) Modificar descuento de mi local \n  c) Eliminar descuento de mi local \n  d) Volver \n2) Aceptar / Rechazar pedido de descuento\n3) Reporte de uso de descuentos\n0) Salir")
+        opcion_owner = input("\nIngrese sector de menu: ")
+        while opcion_owner != "0" and opcion_owner != "1" and opcion_owner != "2" and opcion_owner != "3" and opcion_owner != "a" and opcion_owner != "b" and opcion_owner != "c" and opcion_owner != "d":
+            opcion_owner=input("\nIngrese una de las opciones validas:")
+        match opcion_owner:
+            case "0":
+                cleanWindow()
+                separation()
+                print("Saliste del programa.")
+            case "1":
+                cleanWindow()
+                print("En construccion...")
+                separation()
+            case "2":
+                cleanWindow()
+                print("En construccion...")
+                separation()
+            case "3":
+                cleanWindow()
+                print("En construccion...")
+                separation()
+            case "a":
+                cleanWindow()
+                print("En construccion...")
+                separation()
+            case "b":
+                cleanWindow()
+                print("En construccion...")
+                separation()
+            case "c":
+                cleanWindow()
+                print("En construccion...")
+                separation()
+            case "d":
+                cleanWindow()
+                separation()
+                print("Saliste del programa.")
 
 
 #Procedimiento que muestra el menu de administrador.
@@ -169,9 +267,11 @@ def menu():
             menu_admin=input("\nIngrese una de las opciones validas:")
         match menu_admin:
             case "0":
+                cleanWindow()
                 separation()
                 print("Saliste del programa.")
             case "1":
+                cleanWindow()
                 shop()
             case "2":
                 cleanWindow()
@@ -182,6 +282,7 @@ def menu():
                 print("En construccion...")
                 separation()
             case "4":
+                cleanWindow()
                 news()
             case "5":
                 cleanWindow()
@@ -199,6 +300,7 @@ while(type_user == "notAuth"):
     if type_user == "1" or type_user == "2" or type_user == "3":
         validation(type_user)
     else:
+        cleanWindow()
         separation()
         print("Saliste del programa.")
   

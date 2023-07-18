@@ -3,12 +3,10 @@ import os
 
 #Variables utilizadas globalmente en todo el programa.
 def inicialization():
-    global USER, PASSWORD, count, type_user, admin, menu_admin, count_1, count_2, count_3
-    USER = "admin"
-    PASSWORD= "12345"
-    count = 3  
+    global USER, PASSWORD, count, type_user, menu_admin, count_1, count_2, count_3, USERS
+    USERS = [["1","4","6","9"],["admin","localA","localB","cliente"],["12345","AAAA1111","BBBB2222","33xx33"],["administrador","dueñoLocal","dueñoLocal","cliente"]]
+    count = 3
     type_user = "notAuth"
-    admin = False
     menu_admin = "6"
     count_1 = 0
     count_2 = 0
@@ -21,31 +19,41 @@ def cleanWindow():
     else:
         os.system("clear")
 
-#Procedimiento utilizado para separar contenidos del programa.  
+#Procedimiento utilizado para separar contenidos del programa.
 def separation():
-    print("-------------------------------------------------------------------------------------------------------------")    
+    print("-------------------------------------------------------------------------------------------------------------")
 
 #Procedimiento para validar el usuario y contraseña, y verificar cantidad de intentos.
-def validation():
-    global USER, PASSWORD, count,admin, type_user
+def validation(typeUser):
+    global USERS,USER,PASSWORD,count,type_user
     while (count > 0):
-        user_vd = input("Ingrese su usuario: ").lower()
-        password_vd = getpass.getpass("Ingrese su contraseña: ")
-        if (user_vd != USER or password_vd != PASSWORD):
-            if count == 1:
+        user_vd = input("Ingrese su usuario: ")
+        password_vd = input("Ingrese su contraseña: ")
+        match typeUser:
+            case "1":
+                if(user_vd == USERS[1][0] and password_vd == USERS[2][0]):
+                    menu()
+                    count = 0
+            case "2":
+                if(user_vd == USERS[1][1] and password_vd == USERS[2][1] or user_vd == USERS[1][2] and password_vd == USERS[2][2]):
+                    print("Ingresaste dueño local")
+                    count = 0
+            case "3":
+                if(user_vd == USERS[1][3] and password_vd == USERS[2][3]):
+                    print("Ingresaste como cliente")
+                    count = 0
+        if (count != 0):
+             if count == 1:
                 count = count - 1
                 separation()
                 print("\nUsted ya alcanzo el limite de intentos, lo sentimos el programa se ha cerrado\n")
                 separation()
-            else:
+             else:
                 count = count - 1
                 separation()
                 print(f"\nEl usuario o contraseña son incorrectos le quedan {count} intentos.\n")
                 separation()
-        elif (user_vd == USER or password_vd == PASSWORD):
-           count = 0
-           menu()
-
+       
 #Procedimiento que crea los locales y aumenta el contador dependiendo de su rubro
 def createShop():
     global count_1, count_2, count_3
@@ -60,10 +68,10 @@ def createShop():
         match categoryShop:
             case "1":
                 count_1=count_1 + 1
-                categoryShop="Indumentaria" 
+                categoryShop="Indumentaria"
             case "2":
                 count_2=count_2 + 1
-                categoryShop="Perfumeria" 
+                categoryShop="Perfumeria"
             case "3":
                 count_3=count_3 + 1
                 categoryShop="Comida"
@@ -114,9 +122,9 @@ def shop():
     comparison_may()
     comparison_men()
     separation()
-    print("\na) Crear locales \nb) Modificar local \nc) Eliminar local \nd) Volver")
+    print("\na) Crear locales \nb) Modificar local \nc) Eliminar local \nd) Mapa de locales \ne) Volver")
     shop_menu = input("\nIngrese sector de menu: ")
-    while shop_menu != "a" and shop_menu != "b" and shop_menu != "c" and shop_menu != "d":
+    while shop_menu != "a" and shop_menu != "b" and shop_menu != "c" and shop_menu != "e":
         shop_menu=input("\nIngrese una de las opciones validas:")
     match shop_menu:
         case "a":
@@ -131,8 +139,10 @@ def shop():
             print("En construccion...")
             menu_admin="1"
         case "d":
+            print("mapardo")
+        case "e":
             cleanWindow()
-            
+
 #Procedimiento que muestra el menu para administrar las novedades
 def news():
     global menu_admin
@@ -147,11 +157,11 @@ def news():
         separation()
         print("En construccion.")
         menu_admin="4"
-                
-                
+
+
 #Procedimiento que muestra el menu de administrador.
 def menu():
-    global admin, menu_admin
+    global menu_admin
     while menu_admin != "0":
         print("\n 1) Gestión de locales\n 2) Crear cuentas de dueños de locales\n 3) Aprobar / Denegar solicitud de descuento\n 4) Gestión de Novedades\n 5) Reporte de utilización de descuentos\n 0) Salir")
         menu_admin = input("\nIngrese sector de menu: ")
@@ -177,22 +187,18 @@ def menu():
                 cleanWindow()
                 print("En construccion...")
                 separation()
-            
-    
+
+
 #Programa principal
 inicialization()
 while(type_user == "notAuth"):
-    print("1) Administrador  \n2) Cliente")
+    print("1) Administrador  \n2) Dueño Local \n3) Cliente")
     type_user = input("Ingrese el tipo de usuario o presione 0 para salir: ")
-    while(type_user != "1" and type_user != "2" and type_user != "0"):
+    while(type_user != "1" and type_user != "2" and type_user != "3" and type_user != "0"):
         type_user=input("\nIngrese una de las opciones validas:")
-    match type_user:
-        case "1":
-            validation()
-        case "2":
-            separation()
-            input("Esta seccion se encuentra en contruccion, ingrese cualquier tecla para volver: ")
-            type_user="notAuth"
-        case "0":
-            separation()
-            print("Saliste del programa.")
+    if type_user == "1" or type_user == "2" or type_user == "3":
+        validation(type_user)
+    else:
+        separation()
+        print("Saliste del programa.")
+  

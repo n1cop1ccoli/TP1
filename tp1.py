@@ -15,14 +15,14 @@ def inicialization():
     count_1 = 0
     count_2 = 0
     count_3 = 0
-    llenarLocales()
+    spaceShops()
 #Procedimiento para llenar la tabla de locales con espacios disponibles
-def llenarLocales():
-    for i in range(0,3):
+def spaceShops():
+    for i in range(0,5):
         SHOPS.append([])
-        for j in range(0, 49):
+        for j in range(0, 50):
             SHOPS[i].append(0)
-    print(SHOPS)
+
 #Procedimieno que dependiendo del sistema operativo limpia la terminal
 def cleanWindow():
     if os.name == "nt":
@@ -34,6 +34,21 @@ def cleanWindow():
 def separation():
     print("-------------------------------------------------------------------------------------------------------------")
 
+#Procedimiento utilizado para el ordenamiento de el array de locales
+def sortForShops():
+    print(SHOPS)
+    col= 2
+    for i in range (1, totalShops):
+        for j in range(i+1, totalShops+1):
+            if(SHOPS[i][col] > SHOPS[j][col]):
+               for w in range(0,5):
+                   aux = SHOPS[i][w]
+                   SHOPS[i][w] = SHOPS[j][w]
+                   SHOPS[j][w] = aux
+    print(SHOPS)
+
+
+#Procedimeinto para mostrar el perfil que se esta utilizando en ese momento
 def current_menu(typeUser):
     if(typeUser == "1"):
         print("> MENU ADMINISTRADOR <")
@@ -41,6 +56,18 @@ def current_menu(typeUser):
         print("> MENU DUEÑO LOCAL <")
     if(typeUser == "3"):
         print("> MENU CLIENTE <")
+
+#Procedure utilizado para mostrar la lista de locales.
+def showShops():
+    show = input("Desea ver los locales creados hasta el momento? Ingrese 1 para verlos y 2 para no: ")
+    if(show == "1"):
+            if(totalShops == 0):
+                print("No hay locales creados hasta el momento")
+            else:
+                for j in range(0,totalShops):
+                    print("+-----------------------------------------------------------------------------------------------------------+")
+                    print(f"CODIGO: {SHOPS[0][j]}\nNOMBRE: {SHOPS[1][j]}\nLOCALIZACION: {SHOPS[2][j]}\nRUBRO: {SHOPS[3][j]}\nDUEÑO: {SHOPS[4][j]}")
+                print("+-----------------------------------------------------------------------------------------------------------+")
 
 #Procedimiento para validar el usuario y contraseña, y verificar cantidad de intentos.
 def validation(typeUser):
@@ -83,15 +110,17 @@ def validation(typeUser):
        
 #Procedimiento que crea los locales y aumenta el contador dependiendo de su rubro
 def createShop():
-    global count_1, count_2, count_3
+    global count_1, count_2, count_3, totalShops
     cleanWindow()
     current_menu("1")
     separation()
+    showShops()
     if(totalShops < 50):
         nameShop = input(f"Ingresar nombre del local o * para culminar: ")
         while nameShop != '*':
-            SHOPS[0][totalShops] = nameShop
-            SHOPS[1][totalShops] = input("Ingresar localizacion del local (Piso, Ala, Sector): ")
+            SHOPS[0][totalShops] = totalShops+1
+            SHOPS[1][totalShops] = nameShop
+            SHOPS[2][totalShops] = input("Ingresar localizacion del local (Piso, Ala, Sector): ")
             print("\n1) Indumentaria \n2) Perfumeria \n3) Comida")
             categoryShop = input("Ingresar numero del rubro del local: ")
             while categoryShop != "1" and categoryShop != "2" and categoryShop != "3":
@@ -99,43 +128,22 @@ def createShop():
             match categoryShop:
                 case "1":
                     count_1=count_1 + 1
-                    SHOPS[2][totalShops]="Indumentaria"
+                    SHOPS[3][totalShops]="Indumentaria"
                 case "2":
                     count_2=count_2 + 1
-                    SHOPS[2][totalShops]="Perfumeria"
+                    SHOPS[3][totalShops]="Perfumeria"
                 case "3":
                     count_3=count_3 + 1
-                    SHOPS[2][totalShops]="Comida"
+                    SHOPS[3][totalShops]="Comida"
             print("\n4) Dueño Local A \n6) Dueño Local B")
             dueñoShop = input("Ingresar numero del rubro del local: ")
             while dueñoShop != "4" and dueñoShop != "6":
                 dueñoShop=input("\nIngrese una de las opciones validas:")
-            SHOPS[3][totalShops]=dueñoShop
+            SHOPS[4][totalShops]=dueñoShop
+            totalShops = totalShops + 1
+            sortForShops()
             nameShop = input(f"Ingresar nombre del local o * para culminar: ")
         cleanWindow()
-        print(SHOPS)
-        # nameShop = input(f"Ingresar nombre del local o * para culminar: ")
-        # while nameShop != '*':
-        #     locationShop = input("Ingresar localizacion del local: ")
-        #     print("\n1) Indumentaria \n2) Perfumeria \n3) Comida")
-        #     categoryShop = input("Ingresar numero del rubro del local: ")
-        #     while categoryShop != "1" and categoryShop != "2" and categoryShop != "3":
-        #         categoryShop=input("\nIngrese una de las opciones validas:")
-        #     match categoryShop:
-        #         case "1":
-        #             count_1=count_1 + 1
-        #             SHOPS[2][totalShops]="Indumentaria"
-        #         case "2":
-        #             count_2=count_2 + 1
-        #             SHOPS[2][totalShops]="Perfumeria"
-        #         case "3":
-        #             count_3=count_3 + 1
-        #             SHOPS[2][totalShops]="Comida"
-        #     separation()
-        #     print(f"\nNombre del local: {nameShop}\nLocalizacion del local: {locationShop}\nRubro del local: {categoryShop}")
-        #     separation()
-        #     nameShop = input(f"Ingresar nombre del local o * para culminar: ")
-        # cleanWindow()
 
 #Procedimiento que exhibe el o los rubros que mayor cantidad de locales posee
 def comparison_may():

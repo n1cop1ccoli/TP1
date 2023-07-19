@@ -48,6 +48,23 @@ def sortForShops():
                         SHOPS[w][j] = aux
 
 #Procedimiento utilizado para la busqueda de un nombre repetido si existe
+def verifyName(nameShop):
+    repeat = False
+    col = 1
+    comi = 0
+    fin = totalShops
+    while(fin > comi and not repeat):
+        medio = (comi + fin) // 2
+        print(SHOPS[col][medio], nameShop)
+        print(SHOPS,col,medio, fin, comi)
+        if(SHOPS[col][medio] == nameShop):
+            repeat = True
+        elif(SHOPS[col][medio] > nameShop):
+            fin = medio - 1
+        else:
+            comi = medio + 1
+    return repeat
+
 
 #Procedimeinto para mostrar el perfil que se esta utilizando en ese momento
 def current_menu(typeUser):
@@ -118,7 +135,11 @@ def createShop():
     showShops()
     if(totalShops < 50):
         nameShop = input(f"Ingresar nombre del local o * para culminar: ")
-
+        repeat = verifyName(nameShop)
+        while repeat:
+            print(f"El Nombre {nameShop} ya existe en los locales")
+            nameShop = input(f"Ingresar nombre del local o * para culminar: ")
+            repeat = verifyName(nameShop)
         while nameShop != '*':
             SHOPS[0][totalShops] = totalShops+1
             SHOPS[1][totalShops] = nameShop
@@ -145,6 +166,11 @@ def createShop():
             totalShops = totalShops + 1
             sortForShops()
             nameShop = input(f"Ingresar nombre del local o * para culminar: ")
+            repeat = verifyName(nameShop)
+            while repeat:
+                print(f"El Nombre {nameShop} ya existe en los locales")
+                nameShop = input(f"Ingresar nombre del local o * para culminar: ")
+                repeat = verifyName(nameShop)
         cleanWindow()
 
 #Procedimiento que exhibe el o los rubros que mayor cantidad de locales posee

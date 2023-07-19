@@ -3,7 +3,7 @@ import os
 
 #Variables utilizadas globalmente en todo el programa.
 def inicialization():
-    global USER, PASSWORD, count, type_user, menu_admin, count_1, count_2, count_3, USERS, SHOPS, opcion_owner, opcion_customer, totalShops
+    global USER, PASSWORD, count, type_user, menu_admin, count_1, count_2, count_3, USERS, SHOPS, opcion_owner, opcion_customer, totalShops, businessShop
     USERS = [["1","4","6","9"],["admin","localA","localB","cliente"],["12345","AAAA1111","BBBB2222","33xx33"],["administrador","dueñoLocal","dueñoLocal","cliente"]]
     SHOPS = []
     totalShops = 0
@@ -12,16 +12,17 @@ def inicialization():
     opcion_owner= "1"
     opcion_customer= "1"
     menu_admin = "1"
-    count_1 = 0
-    count_2 = 0
-    count_3 = 0
+    businessShop=[["Indumentaria", "Perfumeria", "Comida"], [0,0,0]]
+    # count_1 = 0
+    # count_2 = 0
+    # count_3 = 0
     spaceShops()
 #Procedimiento para llenar la tabla de locales con espacios disponibles
 def spaceShops():
     for i in range(0,5):
         SHOPS.append([])
         for j in range(0, 50):
-            SHOPS[i].append(0)
+            SHOPS[i].append("0")
 
 #Procedimieno que dependiendo del sistema operativo limpia la terminal
 def cleanWindow():
@@ -53,10 +54,8 @@ def verifyName(nameShop):
     col = 1
     comi = 0
     fin = totalShops
-    while(fin > comi and not repeat):
+    while(fin >= comi and not repeat):
         medio = (comi + fin) // 2
-        print(SHOPS[col][medio], nameShop)
-        print(SHOPS,col,medio, fin, comi)
         if(SHOPS[col][medio] == nameShop):
             repeat = True
         elif(SHOPS[col][medio] > nameShop):
@@ -150,16 +149,26 @@ def createShop():
                 categoryShop=input("\nIngrese una de las opciones validas:")
             match categoryShop:
                 case "1":
-                    count_1=count_1 + 1
+                    for i in range(0,3):
+                        print(i)
+                        if businessShop[0][i] == "Indumentaria":
+                            businessShop[1][i]=businessShop[1][i]+1
+                    # count_1=count_1 + 1
                     SHOPS[3][totalShops]="Indumentaria"
                 case "2":
-                    count_2=count_2 + 1
+                    for i in range(0,3):
+                        if businessShop[0][i] == "Perfumeria":
+                            businessShop[1][i]=businessShop[1][i]+1
+                    # count_2=count_2 + 1
                     SHOPS[3][totalShops]="Perfumeria"
                 case "3":
-                    count_3=count_3 + 1
+                    for i in range(0,3):
+                        if businessShop[0][i] == "Comida":
+                            businessShop[1][i]=businessShop[1][i]+1
+                    # count_3=count_3 + 1
                     SHOPS[3][totalShops]="Comida"
             print("\n4) Dueño Local A \n6) Dueño Local B")
-            dueñoShop = input("Ingresar numero del rubro del local: ")
+            dueñoShop = input("Ingresar codigo del dueño del local: ")
             while dueñoShop != "4" and dueñoShop != "6":
                 dueñoShop=input("\nIngrese una de las opciones validas:")
             SHOPS[4][totalShops]=dueñoShop
@@ -176,44 +185,45 @@ def createShop():
 #Procedimiento que exhibe el o los rubros que mayor cantidad de locales posee
 def comparison_may():
     global count_1, count_2, count_3
-    if count_1 > count_2 and count_1 > count_3:
-        print(f"\nEl rubro que mayor cantidad de locales tiene es indumentaria con {count_1} cantidad de locales")
-    elif(count_2 > count_1 and count_2 > count_3):
-        print(f"\nEl rubro que mayor cantidad de locales tiene es perfumeria con {count_2} cantidad de locales")
-    elif(count_3 > count_1 and count_3 > count_2):
-        print(f"\nEl rubro que mayor cantidad de locales tiene es comida con {count_3} cantidad de locales")
-    elif(count_1 == count_2 and count_3 == count_1):
-        print(f"\nLos rubros tienen la misma cantidad de locales con {count_1} cantidad de locales")
-    elif(count_1 == count_2):
-        print(f"\nLos rubros que mayor cantidad de locales tienen son indumentaria con {count_1} y perfumeria con {count_2} cantidad de locales")
-    elif(count_2 == count_3):
-        print(f"\nLos rubros que mayor cantidad de locales tienen son perfumeria con {count_2} y comida con {count_3} cantidad de locales")
-    elif(count_1 == count_3):
-        print(f"\nLos rubros que mayor cantidad de locales tienen son indumentaria con {count_1} y comida con {count_3} cantidad de locales")
+    # if count_1 > count_2 and count_1 > count_3:
+    #     print(f"\nEl rubro que mayor cantidad de locales tiene es indumentaria con {count_1} cantidad de locales")
+    # elif(count_2 > count_1 and count_2 > count_3):
+    #     print(f"\nEl rubro que mayor cantidad de locales tiene es perfumeria con {count_2} cantidad de locales")
+    # elif(count_3 > count_1 and count_3 > count_2):
+    #     print(f"\nEl rubro que mayor cantidad de locales tiene es comida con {count_3} cantidad de locales")
+    # elif(count_1 == count_2 and count_3 == count_1):
+    #     print(f"\nLos rubros tienen la misma cantidad de locales con {count_1} cantidad de locales")
+    # elif(count_1 == count_2):
+    #     print(f"\nLos rubros que mayor cantidad de locales tienen son indumentaria con {count_1} y perfumeria con {count_2} cantidad de locales")
+    # elif(count_2 == count_3):
+    #     print(f"\nLos rubros que mayor cantidad de locales tienen son perfumeria con {count_2} y comida con {count_3} cantidad de locales")
+    # elif(count_1 == count_3):
+    #     print(f"\nLos rubros que mayor cantidad de locales tienen son indumentaria con {count_1} y comida con {count_3} cantidad de locales")
 
 #Procedimiento que exhibe el o los rubros que menor cantidad de locales posee
 def comparison_men():
     global count_1, count_2, count_3
-    if (count_1 < count_2 and count_1 < count_3):
-        print(f"\nEl rubro que menor cantidad de locales tiene es indumentaria con {count_1} cantidad de locales")
-    elif(count_2 < count_1 and count_2 < count_3):
-        print(f"\nEl rubro que menor cantidad de locales tiene es perfumeria con {count_2} cantidad de locales")
-    elif(count_3 < count_1 and count_3 < count_2):
-        print(f"\nEl rubro que menor cantidad de locales tiene es comida con {count_3} cantidad de locales")
-    elif(count_1 < count_3 and count_2 < count_3 and count_1 == count_2):
-        print(f"\nLos rubros que menor cantidad de locales tienen son indumentaria con {count_1} y perfumeria con {count_2} cantidad de locales")
-    elif(count_2 < count_1 and count_3 < count_1 and count_2 == count_3):
-        print(f"\nLos rubros que menor cantidad de locales tienen son perfumeria con {count_2} y comida con {count_3} cantidad de locales")
-    elif(count_1 < count_2 and count_3 < count_2 and count_1 == count_3):
-        print(f"\nLos rubros que menor cantidad de locales tienen son indumentaria con {count_1} y comida con {count_3} cantidad de locales")
+    # if (count_1 < count_2 and count_1 < count_3):
+    #     print(f"\nEl rubro que menor cantidad de locales tiene es indumentaria con {count_1} cantidad de locales")
+    # elif(count_2 < count_1 and count_2 < count_3):
+    #     print(f"\nEl rubro que menor cantidad de locales tiene es perfumeria con {count_2} cantidad de locales")
+    # elif(count_3 < count_1 and count_3 < count_2):
+    #     print(f"\nEl rubro que menor cantidad de locales tiene es comida con {count_3} cantidad de locales")
+    # elif(count_1 < count_3 and count_2 < count_3 and count_1 == count_2):
+    #     print(f"\nLos rubros que menor cantidad de locales tienen son indumentaria con {count_1} y perfumeria con {count_2} cantidad de locales")
+    # elif(count_2 < count_1 and count_3 < count_1 and count_2 == count_3):
+    #     print(f"\nLos rubros que menor cantidad de locales tienen son perfumeria con {count_2} y comida con {count_3} cantidad de locales")
+    # elif(count_1 < count_2 and count_3 < count_2 and count_1 == count_3):
+    #     print(f"\nLos rubros que menor cantidad de locales tienen son indumentaria con {count_1} y comida con {count_3} cantidad de locales")
 
 #Procedimiento que muestra el menu de administrar locales y muestra el o los rubros que mayor y menor cantidad de locales tienen.
 def shop():
     global menu_admin
     current_menu("1")
     separation()
-    comparison_may()
-    comparison_men()
+    # comparison_may()
+    # comparison_men()
+    print(businessShop)
     separation()
     print("\na) Crear locales \nb) Modificar local \nc) Eliminar local \nd) Mapa de locales \ne) Volver")
     shop_menu = input("\nIngrese sector de menu: ")

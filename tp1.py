@@ -36,17 +36,18 @@ def separation():
 
 #Procedimiento utilizado para el ordenamiento de el array de locales
 def sortForShops():
-    print(SHOPS)
-    col= 2
-    for i in range (1, totalShops):
-        for j in range(i+1, totalShops+1):
-            if(SHOPS[i][col] > SHOPS[j][col]):
-               for w in range(0,5):
-                   aux = SHOPS[i][w]
-                   SHOPS[i][w] = SHOPS[j][w]
-                   SHOPS[j][w] = aux
-    print(SHOPS)
+    global SHOPS
+    col= 1
+    if(totalShops > 1):
+        for i in range (0, totalShops):
+            for j in range(i+1, totalShops):
+                if(SHOPS[col][i] > SHOPS[col][j]):
+                    for w in range(0,5):
+                        aux = SHOPS[w][i]
+                        SHOPS[w][i] = SHOPS[w][j]
+                        SHOPS[w][j] = aux
 
+#Procedimiento utilizado para la busqueda de un nombre repetido si existe
 
 #Procedimeinto para mostrar el perfil que se esta utilizando en ese momento
 def current_menu(typeUser):
@@ -110,13 +111,14 @@ def validation(typeUser):
        
 #Procedimiento que crea los locales y aumenta el contador dependiendo de su rubro
 def createShop():
-    global count_1, count_2, count_3, totalShops
+    global count_1, count_2, count_3, totalShops, SHOPS
     cleanWindow()
     current_menu("1")
     separation()
     showShops()
     if(totalShops < 50):
         nameShop = input(f"Ingresar nombre del local o * para culminar: ")
+
         while nameShop != '*':
             SHOPS[0][totalShops] = totalShops+1
             SHOPS[1][totalShops] = nameShop

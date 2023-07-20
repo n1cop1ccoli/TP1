@@ -3,7 +3,7 @@ import os
 
 #Variables utilizadas globalmente en todo el programa.
 def inicialization():
-    global USER, PASSWORD, count, type_user, menu_admin, count_1, count_2, count_3, USERS, SHOPS, opcion_owner, opcion_customer, totalShops, businessShop
+    global USER, PASSWORD, count, type_user, menu_admin, USERS, SHOPS, opcion_owner, opcion_customer, totalShops, businessShop
     USERS = [["1","4","6","9"],["admin","localA","localB","cliente"],["12345","AAAA1111","BBBB2222","33xx33"],["administrador","dueñoLocal","dueñoLocal","cliente"]]
     SHOPS = []
     totalShops = 0
@@ -13,9 +13,6 @@ def inicialization():
     opcion_customer= "1"
     menu_admin = "1"
     businessShop=[["Indumentaria", "Perfumeria", "Comida"], [0,0,0]]
-    # count_1 = 0
-    # count_2 = 0
-    # count_3 = 0
     spaceShops()
 #Procedimiento para llenar la tabla de locales con espacios disponibles
 def spaceShops():
@@ -36,17 +33,26 @@ def separation():
     print("-------------------------------------------------------------------------------------------------------------")
 
 #Procedimiento utilizado para el ordenamiento de el array de locales
-def sortForShops():
-    global SHOPS
+def sort(Arr, lim, totalCol, Desc):
     col= 1
-    if(totalShops > 1):
-        for i in range (0, totalShops):
-            for j in range(i+1, totalShops):
-                if(SHOPS[col][i] > SHOPS[col][j]):
-                    for w in range(0,5):
-                        aux = SHOPS[w][i]
-                        SHOPS[w][i] = SHOPS[w][j]
-                        SHOPS[w][j] = aux
+    if(lim > 1):
+        for i in range (0, lim):
+            for j in range(i+1, lim):
+                if(Desc):
+                    if(Arr[col][i] < Arr[col][j]):
+                        for w in range(0,totalCol):
+                            print(totalCol, w,i,j, Arr[w][i])
+                            aux = Arr[w][i]
+                            Arr[w][i] = Arr[w][j]
+                            Arr[w][j] = aux
+                else:
+                    if(Arr[col][i] > Arr[col][j]):
+                        for w in range(0,totalCol):
+                            print(totalCol, w,i,j, Arr[w][i])
+                            aux = Arr[w][i]
+                            Arr[w][i] = Arr[w][j]
+                            Arr[w][j] = aux
+                        
 
 #Procedimiento utilizado para la busqueda de un nombre repetido si existe
 def verifyName(nameShop):
@@ -127,7 +133,7 @@ def validation(typeUser):
        
 #Procedimiento que crea los locales y aumenta el contador dependiendo de su rubro
 def createShop():
-    global count_1, count_2, count_3, totalShops, SHOPS
+    global totalShops, SHOPS
     cleanWindow()
     current_menu("1")
     separation()
@@ -150,22 +156,18 @@ def createShop():
             match categoryShop:
                 case "1":
                     for i in range(0,3):
-                        print(i)
                         if businessShop[0][i] == "Indumentaria":
                             businessShop[1][i]=businessShop[1][i]+1
-                    # count_1=count_1 + 1
                     SHOPS[3][totalShops]="Indumentaria"
                 case "2":
                     for i in range(0,3):
                         if businessShop[0][i] == "Perfumeria":
                             businessShop[1][i]=businessShop[1][i]+1
-                    # count_2=count_2 + 1
                     SHOPS[3][totalShops]="Perfumeria"
                 case "3":
                     for i in range(0,3):
                         if businessShop[0][i] == "Comida":
                             businessShop[1][i]=businessShop[1][i]+1
-                    # count_3=count_3 + 1
                     SHOPS[3][totalShops]="Comida"
             print("\n4) Dueño Local A \n6) Dueño Local B")
             dueñoShop = input("Ingresar codigo del dueño del local: ")
@@ -173,7 +175,8 @@ def createShop():
                 dueñoShop=input("\nIngrese una de las opciones validas:")
             SHOPS[4][totalShops]=dueñoShop
             totalShops = totalShops + 1
-            sortForShops()
+            sort(SHOPS, totalShops, 5, False)
+            sort(businessShop, 3, 2, True)
             nameShop = input(f"Ingresar nombre del local o * para culminar: ")
             repeat = verifyName(nameShop)
             while repeat:
@@ -182,48 +185,17 @@ def createShop():
                 repeat = verifyName(nameShop)
         cleanWindow()
 
-#Procedimiento que exhibe el o los rubros que mayor cantidad de locales posee
-def comparison_may():
-    global count_1, count_2, count_3
-    # if count_1 > count_2 and count_1 > count_3:
-    #     print(f"\nEl rubro que mayor cantidad de locales tiene es indumentaria con {count_1} cantidad de locales")
-    # elif(count_2 > count_1 and count_2 > count_3):
-    #     print(f"\nEl rubro que mayor cantidad de locales tiene es perfumeria con {count_2} cantidad de locales")
-    # elif(count_3 > count_1 and count_3 > count_2):
-    #     print(f"\nEl rubro que mayor cantidad de locales tiene es comida con {count_3} cantidad de locales")
-    # elif(count_1 == count_2 and count_3 == count_1):
-    #     print(f"\nLos rubros tienen la misma cantidad de locales con {count_1} cantidad de locales")
-    # elif(count_1 == count_2):
-    #     print(f"\nLos rubros que mayor cantidad de locales tienen son indumentaria con {count_1} y perfumeria con {count_2} cantidad de locales")
-    # elif(count_2 == count_3):
-    #     print(f"\nLos rubros que mayor cantidad de locales tienen son perfumeria con {count_2} y comida con {count_3} cantidad de locales")
-    # elif(count_1 == count_3):
-    #     print(f"\nLos rubros que mayor cantidad de locales tienen son indumentaria con {count_1} y comida con {count_3} cantidad de locales")
-
-#Procedimiento que exhibe el o los rubros que menor cantidad de locales posee
-def comparison_men():
-    global count_1, count_2, count_3
-    # if (count_1 < count_2 and count_1 < count_3):
-    #     print(f"\nEl rubro que menor cantidad de locales tiene es indumentaria con {count_1} cantidad de locales")
-    # elif(count_2 < count_1 and count_2 < count_3):
-    #     print(f"\nEl rubro que menor cantidad de locales tiene es perfumeria con {count_2} cantidad de locales")
-    # elif(count_3 < count_1 and count_3 < count_2):
-    #     print(f"\nEl rubro que menor cantidad de locales tiene es comida con {count_3} cantidad de locales")
-    # elif(count_1 < count_3 and count_2 < count_3 and count_1 == count_2):
-    #     print(f"\nLos rubros que menor cantidad de locales tienen son indumentaria con {count_1} y perfumeria con {count_2} cantidad de locales")
-    # elif(count_2 < count_1 and count_3 < count_1 and count_2 == count_3):
-    #     print(f"\nLos rubros que menor cantidad de locales tienen son perfumeria con {count_2} y comida con {count_3} cantidad de locales")
-    # elif(count_1 < count_2 and count_3 < count_2 and count_1 == count_3):
-    #     print(f"\nLos rubros que menor cantidad de locales tienen son indumentaria con {count_1} y comida con {count_3} cantidad de locales")
-
 #Procedimiento que muestra el menu de administrar locales y muestra el o los rubros que mayor y menor cantidad de locales tienen.
 def shop():
     global menu_admin
     current_menu("1")
     separation()
-    # comparison_may()
-    # comparison_men()
-    print(businessShop)
+    if businessShop[1][0] > businessShop[1][1] and businessShop[1][0] > businessShop[1][2] or businessShop[1][1] > businessShop[1][0] and businessShop[1][1] > businessShop[1][2] or businessShop[1][2] > businessShop[1][1] and businessShop[1][2] > businessShop[1][0]:
+        print(f"El rubro con mayor cantidad de locales es {businessShop[0][0]} con {businessShop[1][0]} locales")
+        print(f"El segundo rubro con mayor cantidad de locales es {businessShop[0][1]} con {businessShop[1][1]} locales")
+        print(f"El rubro con menor cantidad de locales es {businessShop[0][2]} con {businessShop[1][2]} locales")
+    else:
+        print(f"\nLos rubros tienen la misma cantidad de locales con {businessShop[1][0]} cantidad de locales")
     separation()
     print("\na) Crear locales \nb) Modificar local \nc) Eliminar local \nd) Mapa de locales \ne) Volver")
     shop_menu = input("\nIngrese sector de menu: ")

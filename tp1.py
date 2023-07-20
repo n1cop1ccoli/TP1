@@ -17,7 +17,7 @@ def inicialization():
     spaceShops()
 #Procedimiento para llenar la tabla de locales con espacios disponibles
 def spaceShops():
-    for i in range(0,5):
+    for i in range(0,6):
         SHOPS.append([])
         for j in range(0, 50):
             SHOPS[i].append("0")
@@ -42,14 +42,12 @@ def sort(Arr, lim, totalCol, Desc):
                 if(Desc):
                     if(Arr[col][i] < Arr[col][j]):
                         for w in range(0,totalCol):
-                            print(totalCol, w,i,j, Arr[w][i])
                             aux = Arr[w][i]
                             Arr[w][i] = Arr[w][j]
                             Arr[w][j] = aux
                 else:
                     if(Arr[col][i] > Arr[col][j]):
                         for w in range(0,totalCol):
-                            print(totalCol, w,i,j, Arr[w][i])
                             aux = Arr[w][i]
                             Arr[w][i] = Arr[w][j]
                             Arr[w][j] = aux
@@ -83,14 +81,17 @@ def current_menu(typeUser):
 
 #Procedure utilizado para mostrar la lista de locales.
 def showShops():
-    show = input("Desea ver los locales creados hasta el momento? Ingrese 1 para verlos y 2 para no: ")
-    if(show == "1"):
+    show = input("Desea ver los locales creados hasta el momento? S: para si, N: para no: ").upper()
+    while show != "S" and show != "N":
+        print(show)
+        show = input("El codigo ingresado no es valido, desea ver los locales creados hasta el momento? S: para si, N: para no: ").upper()
+    if(show == "S"):
             if(totalShops == 0):
                 print("No hay locales creados hasta el momento")
             else:
                 for j in range(0,totalShops):
                     print("+-----------------------------------------------------------------------------------------------------------+")
-                    print(f"CODIGO: {SHOPS[0][j]}\nNOMBRE: {SHOPS[1][j]}\nLOCALIZACION: {SHOPS[2][j]}\nRUBRO: {SHOPS[3][j]}\nDUEÑO: {SHOPS[4][j]}")
+                    print(f"CODIGO: {SHOPS[0][j]}\nNOMBRE: {SHOPS[1][j]}\nLOCALIZACION: {SHOPS[2][j]}\nRUBRO: {SHOPS[3][j]}\nDUEÑO: {SHOPS[4][j]}\nESTADO: {SHOPS[5][j]}")
                 print("+-----------------------------------------------------------------------------------------------------------+")
 
 #Procedimiento para validar el usuario y contraseña, y verificar cantidad de intentos.
@@ -175,6 +176,7 @@ def createShop():
             while dueñoShop != "4" and dueñoShop != "6":
                 dueñoShop=input("\nIngrese una de las opciones validas:")
             SHOPS[4][totalShops]=dueñoShop
+            SHOPS[5][totalShops]="A"
             totalShops = totalShops + 1
             sort(SHOPS, totalShops, 5, False)
             sort(businessShop, 3, 2, True)
@@ -185,21 +187,100 @@ def createShop():
                 nameShop = input(f"Ingresar nombre del local o * para culminar: ")
                 repeat = verifyName(nameShop)
         cleanWindow()
-        
 #Procedimiento que modifica locales
 def modShop():
     global code, SHOPS
     showShops()
-    code = int(input("Ingrese el codigo del local que desea modificar: "))
-    for i in range(0, totalShops):
-        if (SHOPS[0][i] == code):
-            print("El codigo del local es valido")
-            name = input(f"El nombre actual del local es {SHOPS[1][i]},ingrese el nuevo nombre o de caso contrario ingrese *: ")
-            if (name != "*"):
-                SHOPS[1][i] = name 
-            location = input(f"La ubicacion actual del local es {SHOPS[2][i]},ingrese el nuevo nombre o de caso contrario ingrese *: ")
-            if (name != "*"):
-                SHOPS[2][i] = location   
+    exist = False
+    while not exist:
+        code = int(input("Ingrese el codigo del local que desea modificar o 0 para salir: "))
+        if code != 0:
+            for i in range(0, totalShops):
+                if (SHOPS[0][i] == code):
+                    exist = True
+                    if(SHOPS[5][i] == "B"):
+                        auxStatus = input(f"El local con codigo {SHOPS[0][i]} se encuentra en BAJA, debe activarlo para modificarlo, desea hacerlo? A: para si, *: para no")
+                        if(auxStatus.lower() == "a"):
+                            SHOPS[5][i] == "A"
+                    if(SHOPS[5][i] == "A"):
+                        print("El codigo del local es valido y el local esta activado")
+                        name = input(f"El nombre actual del local es {SHOPS[1][i]},ingrese el nuevo nombre o de caso contrario ingrese *: ")
+                        if (name != "*"):
+                            repeat = verifyName(name)
+                            while repeat:
+                                print(f"El Nombre {name} ya existe en los locales")
+                                name = input(f"Ingresar otro nombre del local: ")
+                                repeat = verifyName(name)
+                            SHOPS[1][i] = name 
+                        location = input(f"La ubicacion actual del local es {SHOPS[2][i]},ingrese la nueva localizacion o de caso contrario ingrese *: ")
+                        if (location != "*"):
+                            SHOPS[2][i] = location   
+                        business = input(f"El rubro actual del local es {SHOPS[3][i]},ingrese * para mantenerlo o cualquier tecla para cambiarlo: ")
+                        if (business != "*"):
+                            for j in range(0,3):
+                                if businessShop[0][j] == SHOPS[3][i]:
+                                    businessShop[1][j]=businessShop[1][j]-1
+                            print("\n1) Indumentaria \n2) Perfumeria \n3) Comida")
+                            businessAux = input("Ingresar numero del nuevo rubro del local: ")
+                            while businessAux != "1" and businessAux != "2" and businessAux != "3":
+                                businessAux=input("\nIngrese una de las opciones validas:")
+                            match businessAux:
+                                case "1": 
+                                    for k in range(0,3):
+                                        if businessShop[0][k] == "Indumentaria":
+                                            businessShop[1][k]=businessShop[1][k]+1
+                                            SHOPS[3][i] = "Indumentaria"
+                                case "2":
+                                    for k in range(0,3):
+                                        if businessShop[0][k] == "Perfumeria":
+                                            businessShop[1][k]=businessShop[1][k]+1
+                                            SHOPS[3][i] = "Perfumeria"
+                                case "3":
+                                    for k in range(0,3):
+                                        if businessShop[0][k] == "Comida":
+                                            businessShop[1][k]=businessShop[1][k]+1
+                                            SHOPS[3][i] = "Comida" 
+                        owner = input(f"El dueño actual del local es {SHOPS[4][i]},ingrese el nuevo codigo de dueño o de caso contrario ingrese *: ")
+                        if (owner != "*"):
+                            print("\n4) Dueño Local A \n6) Dueño Local B")
+                            owner = input("Ingresar codigo del dueño del local: ")
+                            while owner != "4" and owner != "6":
+                                owner=input("\nIngrese una de las opciones validas:")
+                            SHOPS[4][i] = owner
+                    sort(SHOPS, totalShops, 5, False)
+                    sort(businessShop, 3, 2, True)
+        else:
+            exist = True
+        if (not exist):
+            print("El codigo de local no es valido")
+            
+#Procedimiento que cambia el estado de un local para eliminarlo
+def deleteShop():
+    global SHOPS
+    showShops()
+    exist = False
+    while not exist:
+        code = int(input("Ingrese el codigo del local que desea dar de BAJA o 0 para salir: "))
+        if code != 0:
+            for i in range(0, totalShops):
+                if (SHOPS[0][i] == code):
+                    exist = True
+                    if(SHOPS[5][i] == "A"):
+                        auxDelete=input(f"Esta seguro que desea dar de BAJA al local con el codigo {SHOPS[0][i]}, presione B: para si, * para no: ")
+                        if(auxDelete.lower() == "b"):
+                            SHOPS[5][i] = "B"
+                            for j in range(0,3):
+                                if businessShop[0][j] == SHOPS[3][i]:
+                                    businessShop[1][j]=businessShop[1][j]-1
+                            print(f"El local con codigo {SHOPS[0][i]} fue dado de BAJA")
+                    else:
+                        print(f"El local con el codigo {SHOPS[0][i]} ya esta dado de BAJA")
+        else:
+            exist = True
+        if (not exist):
+            print("El codigo de local no es valido")
+    
+    
 
 #Procedimiento que muestra el menu de administrar locales y muestra el o los rubros que mayor y menor cantidad de locales tienen.
 def shop():
@@ -210,8 +291,10 @@ def shop():
         print(f"El rubro con mayor cantidad de locales es {businessShop[0][0]} con {businessShop[1][0]} locales")
         print(f"El segundo rubro con mayor cantidad de locales es {businessShop[0][1]} con {businessShop[1][1]} locales")
         print(f"El rubro con menor cantidad de locales es {businessShop[0][2]} con {businessShop[1][2]} locales")
+    elif(businessShop[1][0] == businessShop[1][1] and businessShop[1][0] == businessShop[1][2]):
+        print(f"Los rubros tienen la misma cantidad de locales con {businessShop[1][0]} cantidad de locales")
     else:
-        print(f"\nLos rubros tienen la misma cantidad de locales con {businessShop[1][0]} cantidad de locales")
+        print(f"Los rubros que tienen la mayor cantidad de locales son {businessShop[0][0]} y {businessShop[0][1]} con {businessShop[1][0]} cantidad de locales")
     separation()
     print("\na) Crear locales \nb) Modificar local \nc) Eliminar local \nd) Mapa de locales \ne) Volver")
     shop_menu = input("\nIngrese sector de menu: ")
@@ -228,8 +311,7 @@ def shop():
             menu_admin="1"
         case "c":
             cleanWindow()
-            separation()
-            print("En construccion...")
+            deleteShop()
             menu_admin="1"
         case "d":
             cleanWindow()

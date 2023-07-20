@@ -3,11 +3,12 @@ import os
 
 #Variables utilizadas globalmente en todo el programa.
 def inicialization():
-    global USER, PASSWORD, count, type_user, menu_admin, USERS, SHOPS, opcion_owner, opcion_customer, totalShops, businessShop
+    global USER, PASSWORD, count, type_user, menu_admin, USERS, SHOPS, opcion_owner, opcion_customer, totalShops, businessShop, code
     USERS = [["1","4","6","9"],["admin","localA","localB","cliente"],["12345","AAAA1111","BBBB2222","33xx33"],["administrador","dueñoLocal","dueñoLocal","cliente"]]
     SHOPS = []
     totalShops = 0
     count = 3
+    code = 0
     type_user = "notAuth"
     opcion_owner= "1"
     opcion_customer= "1"
@@ -184,6 +185,21 @@ def createShop():
                 nameShop = input(f"Ingresar nombre del local o * para culminar: ")
                 repeat = verifyName(nameShop)
         cleanWindow()
+        
+#Procedimiento que modifica locales
+def modShop():
+    global code, SHOPS
+    showShops()
+    code = int(input("Ingrese el codigo del local que desea modificar: "))
+    for i in range(0, totalShops):
+        if (SHOPS[0][i] == code):
+            print("El codigo del local es valido")
+            name = input(f"El nombre actual del local es {SHOPS[1][i]},ingrese el nuevo nombre o de caso contrario ingrese *: ")
+            if (name != "*"):
+                SHOPS[1][i] = name 
+            location = input(f"La ubicacion actual del local es {SHOPS[2][i]},ingrese el nuevo nombre o de caso contrario ingrese *: ")
+            if (name != "*"):
+                SHOPS[2][i] = location   
 
 #Procedimiento que muestra el menu de administrar locales y muestra el o los rubros que mayor y menor cantidad de locales tienen.
 def shop():
@@ -208,8 +224,7 @@ def shop():
            menu_admin = "1"
         case "b":
             cleanWindow()
-            separation()
-            print("En construccion...")
+            modShop()
             menu_admin="1"
         case "c":
             cleanWindow()

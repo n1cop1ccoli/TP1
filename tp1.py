@@ -156,19 +156,13 @@ def createShop():
                 categoryShop=input("\nIngrese una de las opciones validas:")
             match categoryShop:
                 case "1":
-                    for i in range(0,3):
-                        if businessShop[0][i] == "Indumentaria":
-                            businessShop[1][i]=businessShop[1][i]+1
+                    increase("Indumentaria")
                     SHOPS[3][totalShops]="Indumentaria"
                 case "2":
-                    for i in range(0,3):
-                        if businessShop[0][i] == "Perfumeria":
-                            businessShop[1][i]=businessShop[1][i]+1
+                    increase("Perfumeria")
                     SHOPS[3][totalShops]="Perfumeria"
                 case "3":
-                    for i in range(0,3):
-                        if businessShop[0][i] == "Comida":
-                            businessShop[1][i]=businessShop[1][i]+1
+                    increase("Comida")
                     SHOPS[3][totalShops]="Comida"
             print("\n4) Dueño Local A \n6) Dueño Local B")
             dueñoShop = input("Ingresar codigo del dueño del local: ")
@@ -179,6 +173,7 @@ def createShop():
             totalShops = totalShops + 1
             sort(SHOPS, totalShops, 5, False)
             sort(businessShop, 3, 2, True)
+            cleanWindow()
             nameShop = input(f"Ingresar nombre del local o * para culminar: ")
             repeat = verifyName(nameShop)
             while repeat:
@@ -201,7 +196,21 @@ def map():
         while aux != "*":
             aux=input("!OPCION INVALIDA¡ Ingrese * para salir: ")
             
-        
+
+#Procedimiento que aumenta la cantidad de locales por rubro
+def increase(business):
+    for k in range(0,3):
+        if businessShop[0][k] == business:
+            businessShop[1][k]=businessShop[1][k]+1
+            
+
+#Procedimiento que resta la cantidad de locales
+def decrease(businness):
+    for j in range(0,3):
+        if businessShop[0][j] == businness:
+            businessShop[1][j]=businessShop[1][j]-1
+            
+  
 #Procedimiento que modifica locales
 def modShop():
     global code, SHOPS
@@ -214,12 +223,12 @@ def modShop():
                 if (SHOPS[0][i] == code):
                     exist = True
                     if(SHOPS[5][i] == "B"):
-                        auxStatus = input(f"El local con codigo {SHOPS[0][i]} se encuentra en BAJA, debe activarlo para modificarlo, desea hacerlo? A: para si, *: para no")
+                        auxStatus = input(f"\nEl local con codigo '{SHOPS[0][i]}' se encuentra en BAJA, debe activarlo para modificarlo, desea hacerlo? A: para si, *: para no")
                         if(auxStatus.lower() == "a"):
                             SHOPS[5][i] == "A"
                     if(SHOPS[5][i] == "A"):
-                        print("El codigo del local es valido y el local esta activado")
-                        name = input(f"El nombre actual del local es {SHOPS[1][i]},ingrese el nuevo nombre o de caso contrario ingrese *: ")
+                        print("\nEl codigo del local es valido y el local esta activado")
+                        name = input(f"\nEl nombre actual del local es '{SHOPS[1][i]}',ingrese el nuevo nombre o de caso contrario ingrese *: ")
                         if (name != "*"):
                             repeat = verifyName(name)
                             while repeat:
@@ -227,35 +236,27 @@ def modShop():
                                 name = input(f"Ingresar otro nombre del local: ")
                                 repeat = verifyName(name)
                             SHOPS[1][i] = name 
-                        location = input(f"La ubicacion actual del local es {SHOPS[2][i]},ingrese la nueva localizacion o de caso contrario ingrese *: ")
+                        location = input(f"\nLa ubicacion actual del local es '{SHOPS[2][i]}',ingrese la nueva localizacion o de caso contrario ingrese *: ")
                         if (location != "*"):
                             SHOPS[2][i] = location   
-                        business = input(f"El rubro actual del local es {SHOPS[3][i]},ingrese * para mantenerlo o cualquier tecla para cambiarlo: ")
+                        business = input(f"\nEl rubro actual del local es '{SHOPS[3][i]}',ingrese * para mantenerlo o cualquier tecla para cambiarlo: ")
                         if (business != "*"):
-                            for j in range(0,3):
-                                if businessShop[0][j] == SHOPS[3][i]:
-                                    businessShop[1][j]=businessShop[1][j]-1
+                            decrease(SHOPS[3][i])
                             print("\n1) Indumentaria \n2) Perfumeria \n3) Comida")
                             businessAux = input("Ingresar numero del nuevo rubro del local: ")
                             while businessAux != "1" and businessAux != "2" and businessAux != "3":
                                 businessAux=input("\nIngrese una de las opciones validas:")
                             match businessAux:
                                 case "1": 
-                                    for k in range(0,3):
-                                        if businessShop[0][k] == "Indumentaria":
-                                            businessShop[1][k]=businessShop[1][k]+1
-                                            SHOPS[3][i] = "Indumentaria"
+                                    increase("Indumentaria")
+                                    SHOPS[3][i] = "Indumentaria"
                                 case "2":
-                                    for k in range(0,3):
-                                        if businessShop[0][k] == "Perfumeria":
-                                            businessShop[1][k]=businessShop[1][k]+1
-                                            SHOPS[3][i] = "Perfumeria"
+                                    increase("Perfumeria")
+                                    SHOPS[3][i] = "Perfumeria"
                                 case "3":
-                                    for k in range(0,3):
-                                        if businessShop[0][k] == "Comida":
-                                            businessShop[1][k]=businessShop[1][k]+1
-                                            SHOPS[3][i] = "Comida" 
-                        owner = input(f"El dueño actual del local es {SHOPS[4][i]},ingrese el nuevo codigo de dueño o de caso contrario ingrese *: ")
+                                    increase("Comida")
+                                    SHOPS[3][i] = "Comida" 
+                        owner = input(f"\nEl dueño actual del local es '{SHOPS[4][i]}',ingrese el nuevo codigo de dueño o de caso contrario ingrese *: ")
                         if (owner != "*"):
                             print("\n4) Dueño Local A \n6) Dueño Local B")
                             owner = input("Ingresar codigo del dueño del local: ")
@@ -281,15 +282,13 @@ def deleteShop():
                 if (SHOPS[0][i] == code):
                     exist = True
                     if(SHOPS[5][i] == "A"):
-                        auxDelete=input(f"Esta seguro que desea dar de BAJA al local con el codigo {SHOPS[0][i]}, presione B: para si, * para no: ")
+                        auxDelete=input(f"Esta seguro que desea dar de BAJA al local con el codigo '{SHOPS[0][i]}', presione B: para si, * para no: ")
                         if(auxDelete.lower() == "b"):
                             SHOPS[5][i] = "B"
-                            for j in range(0,3):
-                                if businessShop[0][j] == SHOPS[3][i]:
-                                    businessShop[1][j]=businessShop[1][j]-1
-                            print(f"El local con codigo {SHOPS[0][i]} fue dado de BAJA")
+                            decrease(SHOPS[3][i])
+                            print(f"El local con codigo '{SHOPS[0][i]}' fue dado de BAJA")
                     else:
-                        print(f"El local con el codigo {SHOPS[0][i]} ya esta dado de BAJA")
+                        print(f"El local con el codigo '{SHOPS[0][i]}' ya esta dado de BAJA")
         else:
             exist = True
         if (not exist):
@@ -320,6 +319,7 @@ def shop():
         case "b":
             cleanWindow()
             modShop()
+            cleanWindow()
             menu_admin="1"
         case "c":
             cleanWindow()
@@ -337,6 +337,8 @@ def shop():
 def news():
     global menu_admin
     separation()
+    print(">GESTION DE NOVEDADES<")
+    separation()
     print("\na) Crear novedades \nb) Modificar novedad \nc) Eliminar novedad \nd) Ver reporte de novedades \ne) Volver")
     aux = input("\nIngrese sector de menu: ").lower()
     while aux != "a" and aux != "b" and aux != "c" and aux != "d" and aux != "e":
@@ -345,13 +347,12 @@ def news():
         cleanWindow()
     else:
         cleanWindow()
-        separation()
         print("En construccion.")
+        separation()
         menu_admin="4"
 
 def menu_customer():
     global opcion_customer
-    current_menu("3")
     while opcion_customer != "0":
         print("\n1) Registrarme \n2) Buscar descuentos en locales \n3) Solicitar descuento \n4) Ver novedades \n0) Salir")
         opcion_customer = input("\nIngrese sector de menu: ")
@@ -382,7 +383,6 @@ def menu_customer():
 #Procedimeinto que muestra el menu para dueño de local
 def menu_owner():
     global opcion_owner
-    current_menu("2")
     while opcion_owner != "0" and opcion_owner != "d":
         print("\n1) Gestión de Descuentos \n  a) Crear descuento para mi local \n  b) Modificar descuento de mi local \n  c) Eliminar descuento de mi local \n  d) Volver \n2) Aceptar / Rechazar pedido de descuento\n3) Reporte de uso de descuentos\n0) Salir")
         opcion_owner = input("\nIngrese sector de menu: ").lower()
@@ -426,7 +426,6 @@ def menu_owner():
 #Procedimiento que muestra el menu de administrador.
 def menu():
     global menu_admin
-    current_menu("1")
     while menu_admin != "0":
         print("\n 1) Gestión de locales\n 2) Crear cuentas de dueños de locales\n 3) Aprobar / Denegar solicitud de descuento\n 4) Gestión de Novedades\n 5) Reporte de utilización de descuentos\n 0) Salir")
         menu_admin = input("\nIngrese sector de menu: ")

@@ -234,6 +234,7 @@ def shop():
         case "c":
             cleanWindow()
             deleteShop()
+            cleanWindow()
             menu_admin="1"
         case "d":
             cleanWindow()

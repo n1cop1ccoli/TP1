@@ -137,7 +137,6 @@ def validation(typeUser):
 def createShop():
     global totalShops, SHOPS
     cleanWindow()
-    current_menu("1")
     separation()
     showShops()
     if(totalShops < 50):
@@ -187,6 +186,22 @@ def createShop():
                 nameShop = input(f"Ingresar nombre del local o * para culminar: ")
                 repeat = verifyName(nameShop)
         cleanWindow()
+        
+def map():
+    print("> MAPA DE LOCALES <")
+    aux=""
+    while aux != "*":
+        indx=5
+        for i in range(0,9):
+                print("+-+-+-+-+-+")
+                print(f"|{SHOPS[0][indx-5]}|{SHOPS[0][indx-4]}|{SHOPS[0][indx-3]}|{SHOPS[0][indx-2]}|{SHOPS[0][indx-1]}|")
+                indx = indx+5
+        print("+-+-+-+-+-+")
+        aux=input("Ingrese * para salir: ")
+        while aux != "*":
+            aux=input("!OPCION INVALIDA¡ Ingrese * para salir: ")
+            
+        
 #Procedimiento que modifica locales
 def modShop():
     global code, SHOPS
@@ -279,13 +294,10 @@ def deleteShop():
             exist = True
         if (not exist):
             print("El codigo de local no es valido")
-    
-    
 
 #Procedimiento que muestra el menu de administrar locales y muestra el o los rubros que mayor y menor cantidad de locales tienen.
 def shop():
     global menu_admin
-    current_menu("1")
     separation()
     if businessShop[1][0] > businessShop[1][1] and businessShop[1][0] > businessShop[1][2] or businessShop[1][1] > businessShop[1][0] and businessShop[1][1] > businessShop[1][2] or businessShop[1][2] > businessShop[1][1] and businessShop[1][2] > businessShop[1][0]:
         print(f"El rubro con mayor cantidad de locales es {businessShop[0][0]} con {businessShop[1][0]} locales")
@@ -297,9 +309,9 @@ def shop():
         print(f"Los rubros que tienen la mayor cantidad de locales son {businessShop[0][0]} y {businessShop[0][1]} con {businessShop[1][0]} cantidad de locales")
     separation()
     print("\na) Crear locales \nb) Modificar local \nc) Eliminar local \nd) Mapa de locales \ne) Volver")
-    shop_menu = input("\nIngrese sector de menu: ")
+    shop_menu = input("\nIngrese sector de menu: ").lower()
     while shop_menu != "a" and shop_menu != "b" and shop_menu != "c" and shop_menu != "e" and shop_menu != "d":
-        shop_menu=input("\nIngrese una de las opciones validas:")
+        shop_menu=input("\nIngrese una de las opciones validas:").lower()
     match shop_menu:
         case "a":
            cleanWindow()
@@ -315,19 +327,20 @@ def shop():
             menu_admin="1"
         case "d":
             cleanWindow()
-            print("mapardo")
+            map()
+            cleanWindow()
+            menu_admin="1"
         case "e":
             cleanWindow()
 
 #Procedimiento que muestra el menu para administrar las novedades
 def news():
     global menu_admin
-    current_menu("1")
     separation()
     print("\na) Crear novedades \nb) Modificar novedad \nc) Eliminar novedad \nd) Ver reporte de novedades \ne) Volver")
-    aux = input("\nIngrese sector de menu: ")
+    aux = input("\nIngrese sector de menu: ").lower()
     while aux != "a" and aux != "b" and aux != "c" and aux != "d" and aux != "e":
-        aux = input("Ingresar un valor valido: ")
+        aux = input("Ingresar un valor valido: ").lower()
     if aux == "e":
         cleanWindow()
     else:
@@ -338,6 +351,7 @@ def news():
 
 def menu_customer():
     global opcion_customer
+    current_menu("3")
     while opcion_customer != "0":
         print("\n1) Registrarme \n2) Buscar descuentos en locales \n3) Solicitar descuento \n4) Ver novedades \n0) Salir")
         opcion_customer = input("\nIngrese sector de menu: ")
@@ -368,11 +382,12 @@ def menu_customer():
 #Procedimeinto que muestra el menu para dueño de local
 def menu_owner():
     global opcion_owner
+    current_menu("2")
     while opcion_owner != "0" and opcion_owner != "d":
         print("\n1) Gestión de Descuentos \n  a) Crear descuento para mi local \n  b) Modificar descuento de mi local \n  c) Eliminar descuento de mi local \n  d) Volver \n2) Aceptar / Rechazar pedido de descuento\n3) Reporte de uso de descuentos\n0) Salir")
-        opcion_owner = input("\nIngrese sector de menu: ")
+        opcion_owner = input("\nIngrese sector de menu: ").lower()
         while opcion_owner != "0" and opcion_owner != "1" and opcion_owner != "2" and opcion_owner != "3" and opcion_owner != "a" and opcion_owner != "b" and opcion_owner != "c" and opcion_owner != "d":
-            opcion_owner=input("\nIngrese una de las opciones validas:")
+            opcion_owner=input("\nIngrese una de las opciones validas:").lower()
         match opcion_owner:
             case "0":
                 cleanWindow()
@@ -411,6 +426,7 @@ def menu_owner():
 #Procedimiento que muestra el menu de administrador.
 def menu():
     global menu_admin
+    current_menu("1")
     while menu_admin != "0":
         print("\n 1) Gestión de locales\n 2) Crear cuentas de dueños de locales\n 3) Aprobar / Denegar solicitud de descuento\n 4) Gestión de Novedades\n 5) Reporte de utilización de descuentos\n 0) Salir")
         menu_admin = input("\nIngrese sector de menu: ")

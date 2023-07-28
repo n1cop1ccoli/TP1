@@ -8,11 +8,11 @@ import os
 def inicialization():
     global USER, PASSWORD, count, type_user, menu_admin, USERS, SHOPS, opcion_owner, opcion_customer, totalShops, businessShop, code
     USERS = [["1","4","6","9"],["admin@shopping.com","localA@shopping.com","localB@shopping.com","unCliente@shopping.com"],["12345","AAAA1111","BBBB2222","33xx33"],["administrador","dueñoLocal","dueñoLocal","cliente"]]
-    SHOPS = []
+    SHOPS = [['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','']]
     totalShops = 0
     count = 3
     code = 0
-    type_user = "notAuth"
+    type_user = ""
     opcion_owner= "1"
     opcion_customer= "1"
     menu_admin = "1"
@@ -21,9 +21,9 @@ def inicialization():
 #Procedimiento para llenar la tabla de locales con espacios disponibles
 def spaceShops():
     for i in range(0,6):
-        SHOPS.append([])
-        for j in range(0, 50):
-            SHOPS[i].append("0")
+        for j in range(0,50):
+            SHOPS[i][j] = "0"
+    print(SHOPS)
 
 #Procedimieno que dependiendo del sistema operativo limpia la terminal
 def cleanWindow():
@@ -465,7 +465,7 @@ def deleteShop():
 
 #Programa principal
 inicialization()
-while(type_user == "notAuth"):
+while(type_user == ""):
     print("1) Administrador  \n2) Dueño Local \n3) Cliente")
     type_user = input("Ingrese el tipo de usuario o presione 0 para salir: ")
     while(type_user != "1" and type_user != "2" and type_user != "3" and type_user != "0"):

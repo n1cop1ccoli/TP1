@@ -1,10 +1,13 @@
+# Integrantes
+# Bercini Genaro, Egidi Kevin, Piccoli Nicolas
+
 import getpass
 import os
 
 #Variables utilizadas globalmente en todo el programa.
 def inicialization():
     global USER, PASSWORD, count, type_user, menu_admin, USERS, SHOPS, opcion_owner, opcion_customer, totalShops, businessShop, code
-    USERS = [["1","4","6","9"],["admin","localA","localB","cliente"],["12345","AAAA1111","BBBB2222","33xx33"],["administrador","dueñoLocal","dueñoLocal","cliente"]]
+    USERS = [["1","4","6","9"],["admin@shopping.com","localA@shopping.com","localB@shopping.com","unCliente@shopping.com"],["12345","AAAA1111","BBBB2222","33xx33"],["administrador","dueñoLocal","dueñoLocal","cliente"]]
     SHOPS = []
     totalShops = 0
     count = 3
@@ -389,9 +392,9 @@ def modShop():
                 if (SHOPS[0][i] == code):
                     exist = True
                     if(SHOPS[5][i] == "B"):
-                        auxStatus = input(f"\nEl local con codigo '{SHOPS[0][i]}' se encuentra en BAJA, debe activarlo para modificarlo, desea hacerlo? A: para si, *: para no")
+                        auxStatus = input(f"\nEl local con codigo '{SHOPS[0][i]}' se encuentra en BAJA, debe activarlo para modificarlo, desea hacerlo? A: para si, * para no: ")
                         if(auxStatus.lower() == "a"):
-                            SHOPS[5][i] == "A"
+                            SHOPS[5][i] = "A"
                     if(SHOPS[5][i] == "A"):
                         print("\nEl codigo del local es valido y el local esta activado")
                         name = input(f"\nEl nombre actual del local es '{SHOPS[1][i]}',ingrese el nuevo nombre o de caso contrario ingrese *: ")

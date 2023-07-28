@@ -23,7 +23,7 @@ def spaceShops():
     for i in range(0,6):
         for j in range(0,50):
             SHOPS[i][j] = "0"
-    print(SHOPS)
+    
 
 #Procedimieno que dependiendo del sistema operativo limpia la terminal
 def cleanWindow():

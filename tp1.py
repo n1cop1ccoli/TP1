@@ -3,16 +3,39 @@
 
 import getpass
 import os
+import pickle
+import io
+import os.path
+
+
+class Users:
+        def _init_(self):
+            self.code: 0
+            self.user: "0"
+            self.key: "0"
+            self.type: "0"
 
 #Variables utilizadas globalmente en todo el programa.
 def inicialization():
-    global USER, PASSWORD, count, type_user, menu_admin, USERS, SHOPS, opcion_owner, opcion_customer, totalShops, businessShop, code
-    USERS = [["1","4","6","9"],["admin@shopping.com","localA@shopping.com","localB@shopping.com","unCliente@shopping.com"],["12345","AAAA1111","BBBB2222","33xx33"],["administrador","dueñoLocal","dueñoLocal","cliente"]]
+    global workUser,ffUsers,lfUsers, count, type_menu, menu_admin,SHOPS, opcion_owner, opcion_customer, totalShops, businessShop, code, userAdm
+    ffUsers = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\users.dat"
+    lfUsers = open(ffUsers, "w+b")
+    
+    userAdm = Users()
+    userAdm.code = 1
+    userAdm.user = "admin@shooping.com"
+    userAdm.key = "12345"
+    userAdm.type = "administrador"
+    
+    tt = pickle.dump(userAdm,lfUsers)
+    lfUsers.flush()
+    
     SHOPS = [['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','']]
     totalShops = 0
     count = 3
     code = 0
-    type_user = ""
+    pointUser = 0
+    type_menu = ""
     opcion_owner= "1"
     opcion_customer= "1"
     menu_admin = "1"
@@ -38,42 +61,61 @@ def separation():
     
 #Procedimiento para validar el usuario y contraseña, y verificar cantidad de intentos.
 def validation(typeUser):
-    global USERS,USER,PASSWORD,count,type_user
+    global ffUsers,count,type_menu,lfUsers, workUser,pointUser,userAdm
     cleanWindow()
     while (count > 0):
+        flag = False 
         current_menu(typeUser)
         user_vd = input("Ingrese su usuario: ")
         password_vd = getpass.getpass("Ingrese su contraseña: ")
-        match typeUser:
-            case "1":
-                if(user_vd == USERS[1][0] and password_vd == USERS[2][0]):
-                    cleanWindow()
-                    current_menu("1")
-                    menu()
-                    count = 0
-            case "2":
-                if(user_vd == USERS[1][1] and password_vd == USERS[2][1] or user_vd == USERS[1][2] and password_vd == USERS[2][2]):
-                    cleanWindow()
-                    current_menu("2")
-                    menu_owner()
-                    count = 0
-            case "3":
-                if(user_vd == USERS[1][3] and password_vd == USERS[2][3]):
-                    cleanWindow()
-                    current_menu("3")
-                    menu_customer()
-                    count = 0
-        if (count != 0):
-             if count == 1:
-                count = count - 1
-                separation()
-                print("\nUsted ya alcanzo el limite de intentos, lo sentimos el programa se ha cerrado\n")
-                separation()
-             else:
-                count = count - 1
-                separation()
-                print(f"\nEl usuario o contraseña son incorrectos le quedan {count} intentos.\n")
-                separation()
+        
+        limUsers = os.path.getsize(ffUsers)
+        lfUsers.seek(0)
+        while lfUsers.tell() < limUsers and flag == False:
+            pointUser = lfUsers.tell()
+            userAdm = pickle.load(lfUsers)
+            if user_vd == userAdm.user:
+                flag = True
+            else: 
+                print("mail incorrecto")
+                
+        if flag == True and password_vd == userAdm.key:
+            menu()
+                
+            
+        
+        
+        
+        # match typeUser:
+        #     case "1":
+        #         if(user_vd == USERS[1][0] and password_vd == USERS[2][0]):
+        #             cleanWindow()
+        #             current_menu("1")
+        #             menu()
+        #             count = 0
+        #     case "2":
+        #         if(user_vd == USERS[1][1] and password_vd == USERS[2][1] or user_vd == USERS[1][2] and password_vd == USERS[2][2]):
+        #             cleanWindow()
+        #             current_menu("2")
+        #             menu_owner()
+        #             count = 0
+        #     case "3":
+        #         if(user_vd == USERS[1][3] and password_vd == USERS[2][3]):
+        #             cleanWindow()
+        #             current_menu("3")
+        #             menu_customer()
+        #             count = 0
+        # if (count != 0):
+        #      if count == 1:
+        #         count = count - 1
+        #         separation()
+        #         print("\nUsted ya alcanzo el limite de intentos, lo sentimos el programa se ha cerrado\n")
+        #         separation()
+        #      else:
+        #         count = count - 1
+        #         separation()
+        #         print(f"\nEl usuario o contraseña son incorrectos le quedan {count} intentos.\n")
+        #         separation()
                 
 #Procedimeinto para mostrar el perfil que se esta utilizando en ese momento
 def current_menu(typeUser):
@@ -463,16 +505,22 @@ def deleteShop():
         if (not exist):
             print("El codigo de local no es valido")
 
+def sing_up():
+    print("pp")
+
 #Programa principal
 inicialization()
-while(type_user == ""):
-    print("1) Administrador  \n2) Dueño Local \n3) Cliente")
-    type_user = input("Ingrese el tipo de usuario o presione 0 para salir: ")
-    while(type_user != "1" and type_user != "2" and type_user != "3" and type_user != "0"):
-        type_user=input("\nIngrese una de las opciones validas:")
-    if type_user == "1" or type_user == "2" or type_user == "3":
-        validation(type_user)
-    else:
-        cleanWindow()
-        separation()
-        print("Saliste del programa.")
+while(type_menu == ""):
+    print("1) Ingresar como usario registrado  \n2) Registrarse como cliente \n3) Salir")
+    type_menu= input("Ingrese la manera con la cual quiere ingresar: ")
+    while(type_menu != "1" and type_menu != "2" and type_menu != "3" and type_menu != "0"):
+        type_menu=input("\nIngrese una de las opciones validas:")
+    match type_menu:
+        case "1":
+            validation(type_menu)
+        case "2":
+            sing_up()
+        case "3":
+            cleanWindow()
+            separation()
+            print("Saliste del programa.")

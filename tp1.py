@@ -14,20 +14,40 @@ class Users:
             self.user: "0"
             self.key: "0"
             self.type: "0"
+
+class Shops:
+    def _init_(self):
+        self.codShop: 0
+        self.name: "0"
+        self.location: "0"
+        self.category: "0"
+        self.codUser: 0
+        self.status: "0"
             
       
 #Variables utilizadas globalmente en todo el programa.
-def inicialization():
-    global user ,ffUsers,lfUsers, count, type_menu, menu_admin,SHOPS, opcion_owner, opcion_customer, totalShops, businessShop, code, user
-    ffUsers = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\users.dat"
+
+def openFiles():
+    global ffUsers, lfUsers, ffShops, lfShops
+    ffUsers = "D:\\Gena\\TP1\\users.dat"
     lfUsers = open(ffUsers, "w+b")
-    
+    ffShops = "D:\\Gena\\TP1\\shops.dat"
+    lfShops = open(ffShops, "w+b")
+
+def closeFiles():
+     lfUsers.close()
+     lfShops.close()
+
+def inicialization():
+    global user ,ffUsers,lfUsers, count, type_menu, menu_admin,SHOPS, opcion_owner, opcion_customer, totalShops, businessShop, code, user, shop
+    openFiles()
+    shop = Shops()
     user = Users()
     user.code = 1
     user.user = "admin"
     user.key = "12345"
     user.type = "administrador"
-    
+    formatEntity("user", user)
     pickle.dump(user,lfUsers)
     lfUsers.flush()
     
@@ -66,14 +86,25 @@ def validate_user(mail):
     limUsers = os.path.getsize(ffUsers)
     lfUsers.seek(0)
     while lfUsers.tell() < limUsers and flag == False:
-        pointUser = lfUsers.tell()
+        # pointUser = lfUsers.tell()
         user = pickle.load(lfUsers)
         if mail == user.user:
             flag = True
     return flag
-    
-    
-    
+        
+# Procedimiento que valida si un dueño de local existe
+def validate_owner(cod):
+    global user
+    flag = False
+    limUsers = os.path.getsize(ffUsers)
+    lfUsers.seek(0)
+    while lfUsers.tell() < limUsers and flag == False:
+        # pointUser = lfUsers.tell()
+        user = pickle.load(lfUsers)
+        if(cod == user.code):
+            # if(user.type == "dueño               "):
+            flag = True
+    return flag
     
 #Procedimiento para validar el usuario y contraseña, y verificar cantidad de intentos.
 def validation(typeUser):
@@ -81,18 +112,17 @@ def validation(typeUser):
     cleanWindow()
     while (count > 0): 
         current_menu(typeUser)
-        user_vd = input("Ingrese su usuario: ")
-        password_vd = getpass.getpass("Ingrese su contraseña: ")
-        flag = validate_user(user_vd)         
+        user_vd = input("Ingrese su usuario: ").ljust(100, " ")
+        password_vd = getpass.getpass("Ingrese su contraseña: ").ljust(8, " ")
+        flag = validate_user(user_vd)   
         if flag == True and password_vd == user.key:
             match user.type:
-                case "administrador":
-                    menu_admin()
-                case "cliente":
+                case "administrador       ":
+                    menu()
+                case "cliente             ":
                     menu_customer()
-                case "dueño":
+                case "dueño             ":
                     menu_owner()
-        
         
         if (count != 0):
             if count == 1:
@@ -239,7 +269,7 @@ def menu():
                 print("Saliste del programa.")
             case "1":
                 cleanWindow()
-                shop()
+                shopsMenu()
             case "2":
                 cleanWindow()
                 print("En construccion...")
@@ -275,7 +305,7 @@ def news():
         menu_admin="4"
         
 #Procedimiento que muestra el menu de administrar locales y muestra el o los rubros que mayor y menor cantidad de locales tienen.
-def shop():
+def shopsMenu():
     global menu_admin
     separation()
     if businessShop[1][0] > businessShop[1][1] and businessShop[1][0] > businessShop[1][2] or businessShop[1][1] > businessShop[1][0] and businessShop[1][1] > businessShop[1][2] or businessShop[1][2] > businessShop[1][1] and businessShop[1][2] > businessShop[1][0]:
@@ -314,7 +344,6 @@ def shop():
         case "e":
             cleanWindow()
 
-
 #Procedimiento utilizado para el ordenamiento de el array de locales
 def sort(Arr, lim, totalCol, Desc):
     col= 1
@@ -334,21 +363,44 @@ def sort(Arr, lim, totalCol, Desc):
                             Arr[w][i] = Arr[w]
                             Arr[w] = aux
                         
+#Procedimiento utilizado para formatear los datos de usuarios
+def formatEntity(typeEntity, entity):
+    if(typeEntity == "user"):
+        entity.user = str(entity.user)[:100].ljust(100, " ")
+        entity.key = str(entity.key)[:8].ljust(8, " ")
+        entity.type = str(entity.type)[:20].ljust(20, " ")
+    if(typeEntity == "shop"):
+        entity.name = str(entity.name)[:50].ljust(50, " ")
+        entity.location = str(entity.location)[:50].ljust(50, " ")
+        entity.category = str(entity.category)[:50].ljust(50, " ")
+        entity.status = str(entity.status)[:1]
+
+
+    
 
 #Procedimiento utilizado para la busqueda de un nombre repetido si existe
 def verifyName(nameShop):
+    global lfShops, ffShops, shop
     repeat = False
-    col = 1
-    comi = 0
-    fin = totalShops
-    while(fin >= comi and not repeat):
-        medio = (comi + fin) // 2
-        if(SHOPS[col][medio] == nameShop):
-            repeat = True
-        elif(SHOPS[col][medio] > nameShop):
-            fin = medio - 1
-        else:
-            comi = medio + 1
+    lim = os.path.getsize(ffShops)
+    if(lim != 0):
+        lfShops.seek(0)
+        shop = pickle.load(lfShops)
+        sizeReg = lfShops.tell()
+        cantR = lim // sizeReg
+        start = 0
+        end = cantR-1
+        while(end >= start and not repeat):
+            mid = (start + end) // 2
+            lfShops.seek(mid * sizeReg, 0)
+            shop = pickle.load(lfShops)
+            if(shop.name == nameShop):
+                repeat = True
+            elif(shop.name > nameShop):
+                end = mid - 1
+            else:
+                start = mid + 1
+    print(repeat)
     return repeat
 
 
@@ -371,52 +423,46 @@ def showShops():
        
 #Procedimiento que crea los locales y aumenta el contador dependiendo de su rubro
 def createShop():
-    global totalShops, SHOPS
+    global totalShops, SHOPS, lfShops, ffShops, shop
     cleanWindow()
     separation()
-    showShops()
-    if(totalShops < 50):
-        nameShop = input(f"Ingresar nombre del local o * para culminar: ")
+    nameShop = input(f"Ingresar nombre del local o * para culminar: ")
+    while nameShop != '*':
         repeat = verifyName(nameShop)
         while repeat:
             print(f"El Nombre {nameShop} ya existe en los locales")
             nameShop = input(f"Ingresar nombre del local o * para culminar: ")
             repeat = verifyName(nameShop)
-        while nameShop != '*':
-            SHOPS[0][totalShops] = totalShops+1
-            SHOPS[1][totalShops] = nameShop
-            SHOPS[2][totalShops] = input("Ingresar localizacion del local (Piso, Ala, Sector): ")
-            print("\n1) Indumentaria \n2) Perfumeria \n3) Comida")
-            categoryShop = input("Ingresar numero del rubro del local: ")
-            while categoryShop != "1" and categoryShop != "2" and categoryShop != "3":
-                categoryShop=input("\nIngrese una de las opciones validas:")
-            match categoryShop:
-                case "1":
-                    increase("Indumentaria")
-                    SHOPS[3][totalShops]="Indumentaria"
-                case "2":
-                    increase("Perfumeria")
-                    SHOPS[3][totalShops]="Perfumeria"
-                case "3":
-                    increase("Comida")
-                    SHOPS[3][totalShops]="Comida"
-            print("\n4) Dueño Local A \n6) Dueño Local B")
-            dueñoShop = input("Ingresar codigo del dueño del local: ")
-            while dueñoShop != "4" and dueñoShop != "6":
-                dueñoShop=input("\nIngrese una de las opciones validas:")
-            SHOPS[4][totalShops]=dueñoShop
-            SHOPS[5][totalShops]="A"
-            totalShops = totalShops + 1
-            sort(SHOPS, totalShops, 5, False)
-            sort(businessShop, 3, 2, True)
-            cleanWindow()
-            nameShop = input(f"Ingresar nombre del local o * para culminar: ")
-            repeat = verifyName(nameShop)
-            while repeat:
-                print(f"El Nombre {nameShop} ya existe en los locales")
-                nameShop = input(f"Ingresar nombre del local o * para culminar: ")
-                repeat = verifyName(nameShop)
+        shop = Shops()
+        shop.code = count_entity("shop")
+        shop.name = nameShop
+        shop.location = input("Ingresar localizacion del local (Piso, Ala, Sector): ")
+        print("\n1) Indumentaria \n2) Perfumeria \n3) Comida")
+        categoryShop = input("Ingresar numero del rubro del local: ")
+        while categoryShop != "1" and categoryShop != "2" and categoryShop != "3":
+            categoryShop=input("\nIngrese una de las opciones validas:")
+        match categoryShop:
+            case "1":
+                # increase("Indumentaria")
+                shop.category ="Indumentaria"
+            case "2":
+                # increase("Perfumeria")
+                shop.category ="Perfumeria"
+            case "3":
+                # increase("Comida")
+                shop.category ="Comida"
+        ownerShop = int(input("Ingresar codigo del dueño del local: "))
+        exist = validate_owner(ownerShop)
+        while exist == False:
+            ownerShop = int(input("Ingresar codigo del dueño del local: "))
+            exist = validate_owner(ownerShop)
+        shop.codUser = ownerShop
+        shop.status = "A"
+        formatEntity("shop", shop)
+        pickle.dump(shop,lfShops)
+        lfShops.flush()
         cleanWindow()
+        nameShop = input(f"Ingresar nombre del local o * para culminar: ")
         
 def map():
     print("> MAPA DE LOCALES <")
@@ -537,34 +583,39 @@ def sing_up():
     flag = validate_user(new_user)
     while flag == True:
         new_user = input("El mail que intenta registrar ya existe, ingrese otro: ")
-        flag = validate_user(new_user)  
-    
+        flag = validate_user(new_user)
     new_password = input("Ingrese la contraseña a registrar: ")
-    
     user = Users()
-    user.code = count_user()
+    user.code = count_entity()
     user.user = new_user
     user.key = new_password
     user.type = "cliente"
-
+    formatEntity("user", user)
     pickle.dump(user,lfUsers)
     lfUsers.flush()
-    
-    print(user.code)
-    print(user.user)
-    print(user.key)
 
-
-def count_user():
-    global user, ffUsers, lfUsers
-    limUsers = os.path.getsize(ffUsers)
-    lfUsers.seek(io.SEEK_END)   
-    while lfUsers.tell() < limUsers:
+def count_entity(typeEntity):
+    global user, ffUsers, lfUsers, shop, ffShops, lfShops
+    if(typeEntity == "user"):
+        lim = os.path.getsize(ffUsers)
+        lfUsers.seek(0)
         user = pickle.load(lfUsers)
-    return(user.code + 1)
-
-    
-    
+        treg = lfUsers.tell()
+        longe = lim - treg
+        lfUsers.seek(longe)
+        user = pickle.load(lfUsers)
+        return user.code+1
+    if(typeEntity == "shop"):
+        lim = os.path.getsize(ffShops)
+        if( lim != 0):
+           lfShops.seek(0)
+           shop = pickle.load(lfShops)
+           treg = lfShops.tell()
+           longe = lim - treg
+           lfShops.seek(longe)
+           shop = pickle.load(lfShops)
+           return shop.code+1
+        return 1
 
 #Programa principal
 inicialization()
@@ -579,8 +630,7 @@ while(type_menu == ""):
             validation(type_menu)
         case "2":
             sing_up()
-            type_menu= ""
-            
+            type_menu= ""    
         case "3":
             cleanWindow()
             separation()

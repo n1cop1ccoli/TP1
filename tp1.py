@@ -1,5 +1,5 @@
 # Integrantes
-# Bercini Genaro, Egidi Kevin, Piccoli Nicolas
+# Bercini Genaro, Egidi Kevin, Piccoli jlas
 
 import getpass
 import os
@@ -14,20 +14,21 @@ class Users:
             self.user: "0"
             self.key: "0"
             self.type: "0"
-
+            
+      
 #Variables utilizadas globalmente en todo el programa.
 def inicialization():
-    global workUser,ffUsers,lfUsers, count, type_menu, menu_admin,SHOPS, opcion_owner, opcion_customer, totalShops, businessShop, code, userAdm
+    global user ,ffUsers,lfUsers, count, type_menu, menu_admin,SHOPS, opcion_owner, opcion_customer, totalShops, businessShop, code, user
     ffUsers = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\users.dat"
     lfUsers = open(ffUsers, "w+b")
     
-    userAdm = Users()
-    userAdm.code = 1
-    userAdm.user = "admin@shooping.com"
-    userAdm.key = "12345"
-    userAdm.type = "administrador"
+    user = Users()
+    user.code = 1
+    user.user = "admin"
+    user.key = "12345"
+    user.type = "administrador"
     
-    tt = pickle.dump(userAdm,lfUsers)
+    pickle.dump(user,lfUsers)
     lfUsers.flush()
     
     SHOPS = [['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','']]
@@ -45,7 +46,7 @@ def inicialization():
 def spaceShops():
     for i in range(0,6):
         for j in range(0,50):
-            SHOPS[i][j] = "0"
+            SHOPS[i] = "0"
     
 
 #Procedimieno que dependiendo del sistema operativo limpia la terminal
@@ -59,28 +60,51 @@ def cleanWindow():
 def separation():
     print("-------------------------------------------------------------------------------------------------------------")
     
+def validate_user(mail):
+    global user
+    flag = False
+    limUsers = os.path.getsize(ffUsers)
+    lfUsers.seek(0)
+    while lfUsers.tell() < limUsers and flag == False:
+        pointUser = lfUsers.tell()
+        user = pickle.load(lfUsers)
+        if mail == user.user:
+            flag = True
+    return flag
+    
+    
+    
+    
 #Procedimiento para validar el usuario y contraseña, y verificar cantidad de intentos.
 def validation(typeUser):
-    global ffUsers,count,type_menu,lfUsers, workUser,pointUser,userAdm
+    global ffUsers,count,type_menu,lfUsers, workUser,pointUser,user
     cleanWindow()
-    while (count > 0):
-        flag = False 
+    while (count > 0): 
         current_menu(typeUser)
         user_vd = input("Ingrese su usuario: ")
         password_vd = getpass.getpass("Ingrese su contraseña: ")
+        flag = validate_user(user_vd)         
+        if flag == True and password_vd == user.key:
+            match user.type:
+                case "administrador":
+                    menu_admin()
+                case "cliente":
+                    menu_customer()
+                case "dueño":
+                    menu_owner()
         
-        limUsers = os.path.getsize(ffUsers)
-        lfUsers.seek(0)
-        while lfUsers.tell() < limUsers and flag == False:
-            pointUser = lfUsers.tell()
-            userAdm = pickle.load(lfUsers)
-            if user_vd == userAdm.user:
-                flag = True
-            else: 
-                print("mail incorrecto")
-                
-        if flag == True and password_vd == userAdm.key:
-            menu()
+        
+        if (count != 0):
+            if count == 1:
+                count = count - 1
+                separation()
+                print("\nUsted ya alcanzo el limite de intentos, lo sentimos el programa se ha cerrado\n")
+                separation()
+            else:
+                count = count - 1
+                separation()
+                print(f"\nEl usuario o contraseña son incorrectos le quedan {count} intentos.\n")
+                separation()       
                 
             
         
@@ -202,6 +226,7 @@ def menu_owner():
 #Procedimiento que muestra el menu de administrador.
 def menu():
     global menu_admin
+    cleanWindow()
     while menu_admin != "0":
         print("\n 1) Gestión de locales\n 2) Crear cuentas de dueños de locales\n 3) Aprobar / Denegar solicitud de descuento\n 4) Gestión de Novedades\n 5) Reporte de utilización de descuentos\n 0) Salir")
         menu_admin = input("\nIngrese sector de menu: ")
@@ -297,17 +322,17 @@ def sort(Arr, lim, totalCol, Desc):
         for i in range (0, lim):
             for j in range(i+1, lim):
                 if(Desc):
-                    if(Arr[col][i] < Arr[col][j]):
+                    if(Arr[col][i] < Arr[col]):
                         for w in range(0,totalCol):
                             aux = Arr[w][i]
-                            Arr[w][i] = Arr[w][j]
-                            Arr[w][j] = aux
+                            Arr[w][i] = Arr[w]
+                            Arr[w] = aux
                 else:
-                    if(Arr[col][i] > Arr[col][j]):
+                    if(Arr[col][i] > Arr[col]):
                         for w in range(0,totalCol):
                             aux = Arr[w][i]
-                            Arr[w][i] = Arr[w][j]
-                            Arr[w][j] = aux
+                            Arr[w][i] = Arr[w]
+                            Arr[w] = aux
                         
 
 #Procedimiento utilizado para la busqueda de un nombre repetido si existe
@@ -339,7 +364,7 @@ def showShops():
             else:
                 for j in range(0,totalShops):
                     print("+-----------------------------------------------------------------------------------------------------------+")
-                    print(f"CODIGO: {SHOPS[0][j]}\nNOMBRE: {SHOPS[1][j]}\nLOCALIZACION: {SHOPS[2][j]}\nRUBRO: {SHOPS[3][j]}\nDUEÑO: {SHOPS[4][j]}\nESTADO: {SHOPS[5][j]}")
+                    print(f"CODIGO: {SHOPS[0]}\nNOMBRE: {SHOPS[1]}\nLOCALIZACION: {SHOPS[2]}\nRUBRO: {SHOPS[3]}\nDUEÑO: {SHOPS[4]}\nESTADO: {SHOPS[5]}")
                 print("+-----------------------------------------------------------------------------------------------------------+")
 
 
@@ -418,8 +443,8 @@ def increase(business):
 #Procedimiento que resta la cantidad de locales
 def decrease(businness):
     for j in range(0,3):
-        if businessShop[0][j] == businness:
-            businessShop[1][j]=businessShop[1][j]-1
+        if businessShop[0] == businness:
+            businessShop[1]=businessShop[1]-1
             
   
 #Procedimiento que modifica locales
@@ -506,10 +531,44 @@ def deleteShop():
             print("El codigo de local no es valido")
 
 def sing_up():
-    print("pp")
+    global user,Users,lfUsers,ffUsers
+    cleanWindow()
+    new_user = input("Ingrese el correo a registrar: ")
+    flag = validate_user(new_user)
+    while flag == True:
+        new_user = input("El mail que intenta registrar ya existe, ingrese otro: ")
+        flag = validate_user(new_user)  
+    
+    new_password = input("Ingrese la contraseña a registrar: ")
+    
+    user = Users()
+    user.code = count_user()
+    user.user = new_user
+    user.key = new_password
+    user.type = "cliente"
+
+    pickle.dump(user,lfUsers)
+    lfUsers.flush()
+    
+    print(user.code)
+    print(user.user)
+    print(user.key)
+
+
+def count_user():
+    global user, ffUsers, lfUsers
+    limUsers = os.path.getsize(ffUsers)
+    lfUsers.seek(io.SEEK_END)   
+    while lfUsers.tell() < limUsers:
+        user = pickle.load(lfUsers)
+    return(user.code + 1)
+
+    
+    
 
 #Programa principal
 inicialization()
+
 while(type_menu == ""):
     print("1) Ingresar como usario registrado  \n2) Registrarse como cliente \n3) Salir")
     type_menu= input("Ingrese la manera con la cual quiere ingresar: ")
@@ -520,6 +579,8 @@ while(type_menu == ""):
             validation(type_menu)
         case "2":
             sing_up()
+            type_menu= ""
+            
         case "3":
             cleanWindow()
             separation()

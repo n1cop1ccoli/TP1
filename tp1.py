@@ -7,7 +7,6 @@ import pickle
 import io
 import os.path
 
-
 class Users:
         def _init_(self):
             self.code: 0
@@ -29,11 +28,11 @@ class Shops:
 
 def openFiles():
     global ffUsers, lfUsers, ffShops, lfShops
-    #ffUsers = "D:\\Gena\\TP1\\users.dat"
-    ffUsers = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\users.dat"
+    ffUsers = "D:\\Gena\\TP1\\users.dat"
+    # ffUsers = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\users.dat"
     lfUsers = open(ffUsers, "w+b")
-    #ffShops = "D:\\Gena\\TP1\\shops.dat"
-    ffShops = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\shops.dat"
+    ffShops = "D:\\Gena\\TP1\\shops.dat"
+    # ffShops = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\shops.dat"
     lfShops = open(ffShops, "w+b")
 
 def closeFiles():
@@ -274,7 +273,7 @@ def menu():
                 shopsMenu()
             case "2":
                 cleanWindow()
-                print("En construccion...")
+                sing_up("dueño")
                 separation()
             case "3":
                 cleanWindow()
@@ -347,43 +346,24 @@ def shopsMenu():
             cleanWindow()
 
 def sort_shops():
-    global ffUsers,lfUsers
-    lfUsers.seek (0)
-    aux = pickle.load(lfUsers)
-    tamReg = lfUsers.tell() 
-    tamArch = os.path.getsize(ffUsers)
+    global ffShops,lfShops
+    lfShops.seek (0)
+    aux = pickle.load(lfShops)
+    tamReg = lfShops.tell() 
+    tamArch = os.path.getsize(ffShops)
     cantReg = int(tamArch / tamReg)  
     for i in range(0, cantReg-1):
         for j in range (i+1, cantReg):
-            lfUsers.seek (i*tamReg, 0)
-            auxi = pickle.load(lfUsers)
-            lfUsers.seek (j*tamReg, 0)
-            auxj = pickle.load(lfUsers)
-            if (auxi.name < auxj.name):
-                lfUsers.seek (i*tamReg, 0)
-                pickle.dump(auxj, lfUsers)
-                lfUsers.seek (j*tamReg, 0)
-                pickle.dump(auxi,lfUsers)
-                lfUsers.flush()
-
-#Procedimiento utilizado para el ordenamiento de el array de locales
-# def sort(Arr, lim, totalCol, Desc):
-#     col= 1
-#     if(lim > 1):
-#         for i in range (0, lim):
-#             for j in range(i+1, lim):
-#                 if(Desc):
-#                     if(Arr[col][i] < Arr[col]):
-#                         for w in range(0,totalCol):
-#                             aux = Arr[w][i]
-#                             Arr[w][i] = Arr[w]
-#                             Arr[w] = aux
-#                 else:
-#                     if(Arr[col][i] > Arr[col]):
-#                         for w in range(0,totalCol):
-#                             aux = Arr[w][i]
-#                             Arr[w][i] = Arr[w]
-#                             Arr[w] = aux
+            lfShops.seek (i*tamReg, 0)
+            auxi = pickle.load(lfShops)
+            lfShops.seek (j*tamReg, 0)
+            auxj = pickle.load(lfShops)
+            if (auxi.name > auxj.name):
+                lfShops.seek (i*tamReg, 0)
+                pickle.dump(auxj, lfShops)
+                lfShops.seek (j*tamReg, 0)
+                pickle.dump(auxi,lfShops)
+                lfShops.flush()
                         
 #Procedimiento utilizado para formatear los datos de usuarios
 def formatEntity(typeEntity, entity):
@@ -416,18 +396,12 @@ def verifyName(nameShop):
             mid = (start + end) // 2
             lfShops.seek(mid * sizeReg, 0)
             shop = pickle.load(lfShops)
-            print("1",shop.name)
-            print("2",nameShop)
             if(shop.name == nameShop):
                 repeat = True
-                print("3",shop.name)
             elif(shop.name > nameShop):
                 end = mid - 1
-                print("4",shop.name)
             else:
                 start = mid + 1
-                print("5",shop.name)
-    print(repeat)
     return repeat
 
 
@@ -493,22 +467,72 @@ def createShop():
         cleanWindow()
         sort_shops()
         nameShop = input(f"Ingresar nombre del local o * para culminar: ").ljust(50,"a")
-        
-def map():
-    print("> MAPA DE LOCALES <")
-    aux=""
-    while aux != "*":
-        indx=5
-        for i in range(0,9):
-                print("+-+-+-+-+-+")
-                print(f"|{SHOPS[0][indx-5]}|{SHOPS[0][indx-4]}|{SHOPS[0][indx-3]}|{SHOPS[0][indx-2]}|{SHOPS[0][indx-1]}|")
-                indx = indx+5
-        print("+-+-+-+-+-+")
-        aux=input("Ingrese * para salir: ")
-        while aux != "*":
-            aux=input("!OPCION INVALIDA¡ Ingrese * para salir: ")
-            
 
+def map():
+    global ffShops,lfShops
+    print("> MAPA DE LOCALES <") 
+    exit=""
+    while exit != "*":
+        fil = 0
+        col = 0
+        aux=[0,0,0,0,0]
+        aux[0] = colorizar_texto(str(aux[0]), "amarillo")
+        aux[1] = colorizar_texto(str(aux[0]), "amarillo")
+        aux[2] = colorizar_texto(str(aux[0]), "amarillo")
+        aux[3] = colorizar_texto(str(aux[0]), "amarillo")
+        aux[4] = colorizar_texto(str(aux[0]), "amarillo")
+        lim = os.path.getsize(ffShops)
+        lfShops.seek(0)
+        while fil < 10:
+            while lfShops.tell() < lim:
+                while col < 5 and lfShops.tell() < lim:
+                    shop = pickle.load(lfShops)
+                    if(shop.status == "A"):
+                        aux[col] = shop.code
+                        aux[col] = colorizar_texto(str(aux[col]), "verde")
+                    else:
+                        aux[col] = shop.code
+                        aux[col] = colorizar_texto(str(aux[col]), "rojo")
+                    col = col +1
+                print("+-+-+-+-+-+")
+                print(f"|{aux[0]}|{aux[1]}|{aux[2]}|{aux[3]}|{aux[4]}|")
+                aux=[0,0,0,0,0]
+                aux[0] = colorizar_texto(str(aux[0]), "amarillo")
+                aux[1] = colorizar_texto(str(aux[0]), "amarillo")
+                aux[2] = colorizar_texto(str(aux[0]), "amarillo")
+                aux[3] = colorizar_texto(str(aux[0]), "amarillo")
+                aux[4] = colorizar_texto(str(aux[0]), "amarillo")
+                col = 0
+                fil = fil +1
+            aux=[0,0,0,0,0]
+            aux[0] = colorizar_texto(str(aux[0]), "amarillo")
+            aux[1] = colorizar_texto(str(aux[0]), "amarillo")
+            aux[2] = colorizar_texto(str(aux[0]), "amarillo")
+            aux[3] = colorizar_texto(str(aux[0]), "amarillo")
+            aux[4] = colorizar_texto(str(aux[0]), "amarillo")
+            fil = fil +1
+            print("+-+-+-+-+-+")
+            print(f"|{aux[0]}|{aux[1]}|{aux[2]}|{aux[3]}|{aux[4]}|")
+        print("+-+-+-+-+-+")
+        exit=input("Ingrese * para salir: ")
+        while exit != "*":
+            exit=input("!OPCION INVALIDA¡ Ingrese * para salir: ")
+
+
+def colorizar_texto(texto, color):
+    colores = {
+        'reset': '\033[0m',
+        'negro': '\033[30m',
+        'rojo': '\033[31m',
+        'verde': '\033[32m',
+        'amarillo': '\033[33m',
+        'azul': '\033[34m',
+        'magenta': '\033[35m',
+        'cyan': '\033[36m',
+        'blanco': '\033[37m'
+    }
+    return f"{colores[color]}{texto}{colores['reset']}"
+    
 #Procedimiento que aumenta la cantidad de locales por rubro
 def increase(business):
     for k in range(0,3):
@@ -540,22 +564,14 @@ def search_shop(cod):
     lim = os.path.getsize(ffShops)
     if(lim != 0):
         lfShops.seek(0)
-        shop = pickle.load(lfShops)
-        sizeReg = lfShops.tell()
-        cantR = lim // sizeReg
-        start = 0
-        end = cantR-1
-        while(end >= start and not repeat):
-            mid = (start + end) // 2
-            lfShops.seek(mid * sizeReg, 0)
-            punShop = lfShops.tell()
+        while lfShops.tell() < lim and repeat == False:
+            pointShop = lfShops.tell()
             shop = pickle.load(lfShops)
-            if(shop.code == cod):
+            if (shop.code == cod):
+                punShop = pointShop
                 repeat = True
-            elif(shop.code > cod):
-                end = mid - 1
-            else:
-                start = mid + 1
+    else:
+        punShop = lfShops.tell()
     return punShop
                 
 #Procedimiento que modifica locales
@@ -578,15 +594,11 @@ def modShop():
             lfShops.seek(position_shop)
             punShop = lfShops.tell()
             shop = pickle.load(lfShops)  
-            print("code",shop.code)
-            print("name",shop.name)
-            print("estado",shop.status)
             if shop.status == "B":
                 current_status = input(f"\nEl local con codigo {shop.code} se encuentra en BAJA, debe activarlo para modificarlo, desea hacerlo? A: para si, * para no: ")
                 if(current_status.lower() == "a"):
                     shop.code = "A"
             if shop.status == "A":
-                print("codeeee",shop.code)
                 print("\nEl codigo del local es valido y el local esta activado")
                 nameShop= input(f"\nEl nombre actual del local es '{shop.name}',ingrese el nuevo nombre o de caso contrario ingrese *: ").ljust(50,"a")
                 if (nameShop != "*aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"):
@@ -627,104 +639,58 @@ def modShop():
                 pickle.dump(shop,lfShops)
                 lfShops.flush()
                 cleanWindow()
+                sort_shops()
                 showShops()
         codShop = int(input("Ingrese el codigo del local que quiere modificar o 0 para culminar: "))
-        
-    # global code, SHOPS
-    # showShops()
-    # exist = False
-    # while not exist:
-    #     code = int(input("Ingrese el codigo del local que desea modificar o 0 para salir: "))
-    #     if code != 0:
-    #         for i in range(0, totalShops):
-    #             if (SHOPS[0][i] == code):
-    #                 exist = True
-    #                 if(SHOPS[5][i] == "B"):
-    #                     auxStatus = input(f"\nEl local con codigo '{SHOPS[0][i]}' se encuentra en BAJA, debe activarlo para modificarlo, desea hacerlo? A: para si, * para no: ")
-    #                     if(auxStatus.lower() == "a"):
-    #                         SHOPS[5][i] = "A"
-    #                 if(SHOPS[5][i] == "A"):
-    #                     print("\nEl codigo del local es valido y el local esta activado")
-    #                     name = input(f"\nEl nombre actual del local es '{SHOPS[1][i]}',ingrese el nuevo nombre o de caso contrario ingrese *: ")
-    #                     if (name != "*"):
-    #                         repeat = verifyName(name)
-    #                         while repeat:
-    #                             print(f"El Nombre {name} ya existe en los locales")
-    #                             name = input(f"Ingresar otro nombre del local: ")
-    #                             repeat = verifyName(name)
-    #                         SHOPS[1][i] = name 
-    #                     location = input(f"\nLa ubicacion actual del local es '{SHOPS[2][i]}',ingrese la nueva localizacion o de caso contrario ingrese *: ")
-    #                     if (location != "*"):
-    #                         SHOPS[2][i] = location   
-    #                     business = input(f"\nEl rubro actual del local es '{SHOPS[3][i]}',ingrese * para mantenerlo o cualquier tecla para cambiarlo: ")
-    #                     if (business != "*"):
-    #                         decrease(SHOPS[3][i])
-    #                         print("\n1) Indumentaria \n2) Perfumeria \n3) Comida")
-    #                         businessAux = input("Ingresar numero del nuevo rubro del local: ")
-    #                         while businessAux != "1" and businessAux != "2" and businessAux != "3":
-    #                             businessAux=input("\nIngrese una de las opciones validas:")
-    #                         match businessAux:
-    #                             case "1": 
-    #                                 increase("Indumentaria")
-    #                                 SHOPS[3][i] = "Indumentaria"
-    #                             case "2":
-    #                                 increase("Perfumeria")
-    #                                 SHOPS[3][i] = "Perfumeria"
-    #                             case "3":
-    #                                 increase("Comida")
-    #                                 SHOPS[3][i] = "Comida" 
-    #                     owner = input(f"\nEl dueño actual del local es '{SHOPS[4][i]}',ingrese el nuevo codigo de dueño o de caso contrario ingrese *: ")
-    #                     if (owner != "*"):
-    #                         print("\n4) Dueño Local A \n6) Dueño Local B")
-    #                         owner = input("Ingresar codigo del dueño del local: ")
-    #                         while owner != "4" and owner != "6":
-    #                             owner=input("\nIngrese una de las opciones validas:")
-    #                         SHOPS[4][i] = owner
-    #                 sort(SHOPS, totalShops, 5, False)
-    #                 sort(businessShop, 3, 2, True)
-    #     else:
-    #         exist = True
-    #     if (not exist):
-    #         print("El codigo de local no es valido")
-            
-#Procedimiento que cambia el estado de un local para eliminarlo
+    
 def deleteShop():
-    global SHOPS
+    global SHOPS, shop
     showShops()
-    exist = False
-    while not exist:
-        code = int(input("Ingrese el codigo del local que desea dar de BAJA o 0 para salir: "))
-        if code != 0:
-            for i in range(0, totalShops):
-                if (SHOPS[0][i] == code):
-                    exist = True
-                    if(SHOPS[5][i] == "A"):
-                        auxDelete=input(f"Esta seguro que desea dar de BAJA al local con el codigo '{SHOPS[0][i]}', presione B: para si, * para no: ")
-                        if(auxDelete.lower() == "b"):
-                            SHOPS[5][i] = "B"
-                            decrease(SHOPS[3][i])
-                            print(f"El local con codigo '{SHOPS[0][i]}' fue dado de BAJA")
-                    else:
-                        print(f"El local con el codigo '{SHOPS[0][i]}' ya esta dado de BAJA")
-        else:
-            exist = True
-        if (not exist):
-            print("El codigo de local no es valido")
-
-def sing_up():
+    codShop = int(input("Ingrese el codigo del local que desea dar de BAJA o 0 para salir: "))
+    if(codShop != 0):
+        print(codShop)
+        exist = verify_shop(codShop)
+        if(exist == True):
+            position_shop = search_shop(codShop)
+            shop = Shops()
+            lfShops.seek(position_shop)
+            punShop = lfShops.tell()
+            shop = pickle.load(lfShops)
+            print(shop.name)
+            print(shop.status)
+            if(shop.status == "A"):
+                auxDelete=input(f"Esta seguro que desea dar de BAJA al local con el codigo '{codShop}', presione B: para si, * para no: ")
+                while auxDelete != '*' and auxDelete.lower() != 'b':
+                    print(f'Opcion {auxDelete} no valida')
+                    auxDelete=input(f"Esta seguro que desea dar de BAJA al local con el codigo '{codShop}', presione B: para si, * para no: ")
+                if(auxDelete.lower() == "b"):
+                    shop.status = "B"
+                    print(f"El local con codigo '{codShop}' fue dado de BAJA")
+            else:
+                  print(f"El local con el codigo '{codShop}' ya esta dado de BAJA")
+        print(shop.name)
+        print(shop.status)
+        lfShops.seek(punShop,io.SEEK_SET)
+        pickle.dump(shop,lfShops)
+        lfShops.flush()
+            
+def sing_up(typeUser):
     global user,Users,lfUsers,ffUsers
     cleanWindow()
-    new_user = input("Ingrese el correo a registrar: ")
+    new_user = input("Ingrese el correo a registrar: ").ljust(100, " ")
     flag = validate_user(new_user)
     while flag == True:
-        new_user = input("El mail que intenta registrar ya existe, ingrese otro: ")
+        new_user = input("El mail que intenta registrar ya existe, ingrese otro: ").ljust(100, " ")
         flag = validate_user(new_user)
-    new_password = input("Ingrese la contraseña a registrar: ")
+    new_password = input("Ingrese la contraseña a registrar: ").ljust(8, " ")
     user = Users()
-    user.code = count_entity()
+    user.code = count_entity("user")
     user.user = new_user
     user.key = new_password
-    user.type = "cliente"
+    if typeUser == "cliente":
+        user.type = "cliente".ljust(20, " ")
+    if typeUser == "dueño":
+        user.type = "dueño".ljust(20, " ")
     formatEntity("user", user)
     pickle.dump(user,lfUsers)
     lfUsers.flush()
@@ -733,24 +699,34 @@ def count_entity(typeEntity):
     global user, ffUsers, lfUsers, shop, ffShops, lfShops
     if(typeEntity == "user"):
         lim = os.path.getsize(ffUsers)
+        lastCode = 0
         lfUsers.seek(0)
-        user = pickle.load(lfUsers)
-        treg = lfUsers.tell()
-        longe = lim - treg
-        lfUsers.seek(longe)
-        user = pickle.load(lfUsers)
-        return user.code+1
+        while lfUsers.tell() < lim:
+            user = pickle.load(lfUsers)
+            if user.code > lastCode:
+                lastCode = user.code
+        return lastCode+1
     if(typeEntity == "shop"):
         lim = os.path.getsize(ffShops)
         if( lim != 0):
-           lfShops.seek(0)
-           shop = pickle.load(lfShops)
-           treg = lfShops.tell()
-           longe = lim - treg
-           lfShops.seek(longe)
-           shop = pickle.load(lfShops)
-           return shop.code+1
+            lastCode = 0
+            lfShops.seek(0)
+            while lfShops.tell() < lim:
+                shop = pickle.load(lfShops)
+                if shop.code > lastCode:
+                    lastCode = shop.code
+            return lastCode+1
         return 1
+        # lim = os.path.getsize(ffUsers)
+        # lfUsers.seek(0)
+        # user = pickle.load(lfUsers)
+        # treg = lfUsers.tell()
+        # longe = lim - treg
+        # print(longe, treg, lim)
+        # lfUsers.seek(longe)
+        # print(lfUsers)
+        # user = pickle.load(lfUsers)
+        # return user.code+1
 
 #Programa principal
 inicialization()
@@ -764,7 +740,7 @@ while(type_menu == ""):
         case "1":
             validation(type_menu)
         case "2":
-            sing_up()
+            sing_up("cliente")
             type_menu= ""    
         case "3":
             cleanWindow()

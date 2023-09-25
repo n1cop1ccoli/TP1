@@ -1,38 +1,53 @@
 # Integrantes
-# Bercini Genaro, Egidi Kevin, Piccoli jlas
+# Bercini Genaro, Egidi Kevin, Piccoli nicolás
 
 import getpass
 import os
 import pickle
 import io
 import os.path
+from datetime import datetime, timedelta
+from datetime import date
+
+
 
 class Users:
-        def _init_(self):
-            self.code: 0
-            self.user: "0"
-            self.key: "0"
-            self.type: "0"
+    def _init_(self):
+        self.code: 0
+        self.user: "0"
+        self.key: "0"
+        self.type: "0"
 
 class Shops:
     def _init_(self):
-        self.codShop: 0
+        self.code: 0
         self.name: "0"
         self.location: "0"
         self.category: "0"
         self.codUser: 0
         self.status: "0"
-            
+
+class Promotions:
+    def _init_(self):
+        self.codPromo: 0
+        self.textPromo: "0"
+        self.dateSince: "0"
+        self.dateUntil: "0"
+        self.weekDay: [0,0,0,0,0,0,0,0]
+        self.status: "0"
+        self.code: 0
       
 #Variables utilizadas globalmente en todo el programa.
 
 def openFiles():
-    global ffUsers, lfUsers, ffShops, lfShops
-    ffUsers = "D:\\Gena\\TP1\\users.dat"
-    # ffUsers = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\users.dat"
+    global ffUsers, lfUsers, ffShops, lfShops,lfProm, ffProm
+    #ffUsers = "D:\\Gena\\TP1\\users.dat"
+    ffUsers = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\users.dat"
     lfUsers = open(ffUsers, "w+b")
-    ffShops = "D:\\Gena\\TP1\\shops.dat"
-    # ffShops = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\shops.dat"
+    ffProm = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\promotions.dat"
+    lfProm = open(ffProm, "w+b")
+    #ffShops = "D:\\Gena\\TP1\\shops.dat"
+    ffShops = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\shops.dat"
     lfShops = open(ffShops, "w+b")
 
 def closeFiles():
@@ -40,9 +55,10 @@ def closeFiles():
      lfShops.close()
 
 def inicialization():
-    global user ,ffUsers,lfUsers, count, type_menu, menu_admin,SHOPS, opcion_owner, opcion_customer, totalShops, businessShop, code, user, shop
+    global user ,ffUsers,lfUsers, count, type_menu, menu_admin,SHOPS, opcion_owner, opcion_customer, totalShops, businessShop, code, user, shop, Promo
     openFiles()
     shop = Shops()
+    promo = Promotions()
     user = Users()
     user.code = 1
     user.user = "admin"
@@ -51,6 +67,7 @@ def inicialization():
     formatEntity("user", user)
     pickle.dump(user,lfUsers)
     lfUsers.flush()
+
     
     SHOPS = [['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''],['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','']]
     totalShops = 0
@@ -82,12 +99,12 @@ def separation():
     print("-------------------------------------------------------------------------------------------------------------")
     
 def validate_user(mail):
-    global user
+    global user, pointUser
     flag = False
     limUsers = os.path.getsize(ffUsers)
     lfUsers.seek(0)
     while lfUsers.tell() < limUsers and flag == False:
-        # pointUser = lfUsers.tell()
+        pointUser = lfUsers.tell()
         user = pickle.load(lfUsers)
         if mail == user.user:
             flag = True
@@ -100,32 +117,48 @@ def validate_owner(cod):
     limUsers = os.path.getsize(ffUsers)
     lfUsers.seek(0)
     while lfUsers.tell() < limUsers and flag == False:
-        # pointUser = lfUsers.tell()
+        pointUser = lfUsers.tell()
         user = pickle.load(lfUsers)
         if(cod == user.code):
-            # if(user.type == "dueño               "):
-            flag = True
+                if(user.type == "dueño               "):
+                    flag = True
+                    
     return flag
     
 #Procedimiento para validar el usuario y contraseña, y verificar cantidad de intentos.
 def validation(typeUser):
-    global ffUsers,count,type_menu,lfUsers, workUser,pointUser,user
+    global ffUsers,count,type_menu,lfUsers, workUser,pointUser,user, opcion_customer, opcion_owner, menu_admin
     cleanWindow()
+    count = 3
     while (count > 0): 
         current_menu(typeUser)
         user_vd = input("Ingrese su usuario: ").ljust(100, " ")
         password_vd = getpass.getpass("Ingrese su contraseña: ").ljust(8, " ")
         flag = validate_user(user_vd)   
+        print(flag)
+        print(password_vd)
+        print(user.user)
+        print(user.key)
+        print(user.type)
+        print(user.code)
+        print(count)
         if flag == True and password_vd == user.key:
             match user.type:
                 case "administrador       ":
                     menu()
+                    count = 0
+                    menu_admin = "1"
                 case "cliente             ":
                     menu_customer()
-                case "dueño             ":
+                    count = 0
+                    opcion_customer= "1"
+                case "dueño               ":
                     menu_owner()
+                    count = 0
+                    opcion_owner= "1"
+            
         
-        if (count != 0):
+        elif (count != 0):
             if count == 1:
                 count = count - 1
                 separation()
@@ -211,11 +244,85 @@ def menu_customer():
                 print("En construccion...")
                 separation()
 
+def verifyCode(codeShop,userCode):
+    flag = False
+    limShop = os.path.getsize(ffShops)
+    lfShops.seek(0)
+    while lfShops.tell() < limShop and flag == False:
+        shop = pickle.load(lfShops)
+        if (shop.codUser == userCode and shop.code == codeShop):
+            flag = True
+    return flag
+            
+
+def showProm(point):
+    global ffProm,lfProm, promo, lfUsers,ffUsers
+    limProm = os.path.getsize(ffProm)
+    if limProm != 0:
+        lfProm.seek(0) 
+        lfUsers.seek(point)
+        user = pickle.load(lfUsers)
+        while lfProm.tell() < limProm:
+            promo = pickle.load(lfProm)
+            flag = verifyCode(promo.code,user.code)
+            if flag == True:
+                print("+-----------------------------------------------------------------------------------------------------------+")
+                print(f"CODIGO DE PROMO: {promo.code}\nDESCRIPCIÓN: {promo.textPromo}\nFECHA DE INCICIO: {promo.dateSince}\nFECHA DE FINALIZACIÓN: {promo.dateUntil}\nDÍAS DE DESCUENTO: \nLUNES:{promo.weekDay[0]} \nMARTES:{promo.weekDay[1]} \nMIERCOLES:{promo.weekDay[2]} \nJUEVES:{promo.weekDay[3]} \nVIERNES:{promo.weekDay[4]} \nSABADO:{promo.weekDay[5]} \nDOMINGO:{promo.weekDay[6]}  \nESTADO: {promo.status} \nCODIGO LOCAL:{promo.code}")
+                print("+-----------------------------------------------------------------------------------------------------------+")
+    print("No hay promociones cargadas hasta el momento.")  
+    
+              
+def createProm():
+    global pointUser
+    flag = False
+    codFlag = False
+    showProm(pointUser)
+    promo = Promotions()
+    descrption = input(f"Ingresar la descipción de la promoción o * para culminar: ").ljust(20, " ")
+    while descrption != "*                   ":
+        promo.textPromo = descrption
+        promo.codPromo = count_entity("promo")
+        while flag == False:
+            dateSince = input("Ingrese fecha de comienzo de la promocion (dd-mm-aaaa): ")
+            dateSin= datetime.strptime(dateSince, "%d-%m-%Y").date()
+            dateUntil = input("Ingrese fecha de culminacion de la promocion (dd-mm-aaaa): ")
+            dateUnt = datetime.strptime(dateUntil, "%d-%m-%Y").date()
+            today = date.today()
+            if dateSin <= dateUnt and dateSin >= today:
+                flag = True
+                promo.dateSince = dateSin
+                promo.dateUntil = dateUnt
+            else:
+                print("La fecha es invalida, ingrese una fecha de inicio que sea mayor o igual a la fecha del día de hoy y una fecha de finalizacion que sea mayor o igual a la fecha de inicio")
+        print("Ingrese el numero 1 para los días de la semana que la oferta sea valida y un 0 para aquellos en los que no")
+        auxWeek= [0,0,0,0,0,0,0]
+        auxDay= ["Lunes","Martes","Miercoles","Jueves","Viernes","Sabado","Domingo"]
+        for i in range (0,7):
+            print(f"Día {auxDay[i]}")
+            auxWeek[i] = int(input("Ingrese 1 o 0: "))
+        promo.weekDay = auxWeek
+        promo.status = "Pendiente"
+        auxCodShop = int(input("Ingrese el codigo del local al cual le quiere aplicar la promocion: "))
+        while codFlag == False: 
+            lfUsers.seek(pointUser)
+            user = pickle.load(lfUsers)
+            codFlag = verifyCode(auxCodShop,user.code)
+            if codFlag == False:
+                auxCodShop = int(input("El codigo del local que ingreso no es valido, por favor ingrese otro: "))
+        promo.code = auxCodShop
+        formatEntity("promo", promo)
+        pickle.dump(promo,lfProm)
+        lfProm.flush()
+        print(promo.code)
+        descrption = input(f"Si desea crear otra promocion ingrese su descipción o * para culminar: ").ljust(20, " ")
+
+    
+    
 #Procedimeinto que muestra el menu para dueño de local
 def menu_owner():
     global opcion_owner
     while opcion_owner != "0" and opcion_owner != "d":
-        print("\n1) Gestión de Descuentos \n  a) Crear descuento para mi local \n  b) Modificar descuento de mi local \n  c) Eliminar descuento de mi local \n  d) Volver \n2) Aceptar / Rechazar pedido de descuento\n3) Reporte de uso de descuentos\n0) Salir")
+        print("\n1) Crear descuento \n2) Reporte de uso de descuento\n3) Ver novedades \n0) Salir")
         opcion_owner = input("\nIngrese sector de menu: ").lower()
         while opcion_owner != "0" and opcion_owner != "1" and opcion_owner != "2" and opcion_owner != "3" and opcion_owner != "a" and opcion_owner != "b" and opcion_owner != "c" and opcion_owner != "d":
             opcion_owner=input("\nIngrese una de las opciones validas:").lower()
@@ -226,7 +333,7 @@ def menu_owner():
                 print("Saliste del programa.")
             case "1":
                 cleanWindow()
-                print("En construccion...")
+                createProm()
                 separation()
             case "2":
                 cleanWindow()
@@ -234,24 +341,9 @@ def menu_owner():
                 separation()
             case "3":
                 cleanWindow()
-                print("En construccion...")
+                print("Diagramado en chapín")
                 separation()
-            case "a":
-                cleanWindow()
-                print("En construccion...")
-                separation()
-            case "b":
-                cleanWindow()
-                print("En construccion...")
-                separation()
-            case "c":
-                cleanWindow()
-                print("En construccion...")
-                separation()
-            case "d":
-                cleanWindow()
-                separation()
-                print("Saliste del programa.")
+            
 
 
 #Procedimiento que muestra el menu de administrador.
@@ -376,6 +468,12 @@ def formatEntity(typeEntity, entity):
         entity.location = str(entity.location)[:50].ljust(50, "a")
         entity.category = str(entity.category)[:50].ljust(50, "a")
         entity.status = str(entity.status)[:1]
+    if (typeEntity == "promo"):
+        entity.textPromo = str(entity.textPromo)[:20].ljust(20, " ")
+        entity. dateSince = str(entity.dateSince)[:10]
+        entity. dateUntil =  str(entity.dateUntil)[:10]
+        entity.status = str(entity.status)[:10].ljust(10, " ")
+        
 
 
     
@@ -438,6 +536,7 @@ def createShop():
             repeat = verifyName(nameShop)
         shop = Shops()
         shop.code = count_entity("shop")
+        print(shop.code)
         shop.name = nameShop
         shop.location = input("Ingresar localizacion del local (Piso, Ala, Sector): ")
         print("\n1) Indumentaria \n2) Perfumeria \n3) Comida")
@@ -696,7 +795,7 @@ def sing_up(typeUser):
     lfUsers.flush()
 
 def count_entity(typeEntity):
-    global user, ffUsers, lfUsers, shop, ffShops, lfShops
+    global user, ffUsers, lfUsers, shop, ffShops, lfShops,lfProm, ffProm,promo
     if(typeEntity == "user"):
         lim = os.path.getsize(ffUsers)
         lastCode = 0
@@ -715,6 +814,17 @@ def count_entity(typeEntity):
                 shop = pickle.load(lfShops)
                 if shop.code > lastCode:
                     lastCode = shop.code
+            return lastCode+1
+        return 1
+    if(typeEntity == "promo"):
+        lim = os.path.getsize(ffProm)
+        if( lim != 0):
+            lastCode = 0
+            lfProm.seek(0)
+            while lfProm.tell() < lim:
+                promo = pickle.load(lfProm)
+                if promo.codPromo > lastCode:
+                    lastCode = promo.codPromo
             return lastCode+1
         return 1
         # lim = os.path.getsize(ffUsers)
@@ -739,6 +849,7 @@ while(type_menu == ""):
     match type_menu:
         case "1":
             validation(type_menu)
+            type_menu = ""
         case "2":
             sing_up("cliente")
             type_menu= ""    

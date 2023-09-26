@@ -135,13 +135,6 @@ def validation(typeUser):
         user_vd = input("Ingrese su usuario: ").ljust(100, " ")
         password_vd = getpass.getpass("Ingrese su contraseña: ").ljust(8, " ")
         flag = validate_user(user_vd)   
-        print(flag)
-        print(password_vd)
-        print(user.user)
-        print(user.key)
-        print(user.type)
-        print(user.code)
-        print(count)
         if flag == True and password_vd == user.key:
             match user.type:
                 case "administrador       ":
@@ -267,20 +260,20 @@ def showProm(point):
             flag = verifyCode(promo.code,user.code)
             if flag == True:
                 print("+-----------------------------------------------------------------------------------------------------------+")
-                print(f"CODIGO DE PROMO: {promo.code}\nDESCRIPCIÓN: {promo.textPromo}\nFECHA DE INCICIO: {promo.dateSince}\nFECHA DE FINALIZACIÓN: {promo.dateUntil}\nDÍAS DE DESCUENTO: \nLUNES:{promo.weekDay[0]} \nMARTES:{promo.weekDay[1]} \nMIERCOLES:{promo.weekDay[2]} \nJUEVES:{promo.weekDay[3]} \nVIERNES:{promo.weekDay[4]} \nSABADO:{promo.weekDay[5]} \nDOMINGO:{promo.weekDay[6]}  \nESTADO: {promo.status} \nCODIGO LOCAL:{promo.code}")
+                print(f"CODIGO DE PROMO: {promo.codPromo}\nDESCRIPCIÓN: {promo.textPromo}\nFECHA DE INCICIO: {promo.dateSince}\nFECHA DE FINALIZACIÓN: {promo.dateUntil}\nDÍAS DE DESCUENTO: \nLUNES:{promo.weekDay[0]} \nMARTES:{promo.weekDay[1]} \nMIERCOLES:{promo.weekDay[2]} \nJUEVES:{promo.weekDay[3]} \nVIERNES:{promo.weekDay[4]} \nSABADO:{promo.weekDay[5]} \nDOMINGO:{promo.weekDay[6]}  \nESTADO: {promo.status} \nCODIGO LOCAL:{promo.code}")
                 print("+-----------------------------------------------------------------------------------------------------------+")
-    print("No hay promociones cargadas hasta el momento.")  
+    else:
+        print("No hay promociones cargadas hasta el momento.")  
     
               
 def createProm():
     global pointUser
-    flag = False
-    codFlag = False
     showProm(pointUser)
     promo = Promotions()
     descrption = input(f"Ingresar la descipción de la promoción o * para culminar: ").ljust(20, " ")
     while descrption != "*                   ":
         promo.textPromo = descrption
+        flag = False
         promo.codPromo = count_entity("promo")
         while flag == False:
             dateSince = input("Ingrese fecha de comienzo de la promocion (dd-mm-aaaa): ")
@@ -299,10 +292,14 @@ def createProm():
         auxDay= ["Lunes","Martes","Miercoles","Jueves","Viernes","Sabado","Domingo"]
         for i in range (0,7):
             print(f"Día {auxDay[i]}")
-            auxWeek[i] = int(input("Ingrese 1 o 0: "))
+            auxDays = int(input("Ingrese 1 o 0: "))
+            while auxDays != 1 and auxDays != 0:
+                auxDays = int(input("La opcion que ingreso no corresponde, ingrese una de las opciones validas 1 o 0: "))
+            auxWeek[i] = auxDays
         promo.weekDay = auxWeek
         promo.status = "Pendiente"
         auxCodShop = int(input("Ingrese el codigo del local al cual le quiere aplicar la promocion: "))
+        codFlag = False
         while codFlag == False: 
             lfUsers.seek(pointUser)
             user = pickle.load(lfUsers)

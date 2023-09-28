@@ -72,7 +72,7 @@ def closeFiles():
      lfShops.close()
 
 def inicialization():
-    global user ,ffUsers,lfUsers, count, type_menu, menu_admin, opcion_owner, opcion_customer, totalShops, businessShop, code, user, shop, promo, pointUser, useP
+    global user ,ffUsers,lfUsers, count, type_menu, menu_admin, opcion_owner, opcion_customer, totalShops, code, user, shop, promo, pointUser, useP, categories
     openFiles()
     shop = Shops()
     promo = Promotions()
@@ -86,8 +86,16 @@ def inicialization():
     pickle.dump(user,lfUsers)
     lfUsers.flush()
     #---------------------------------------
-    categories = [None]*9
-
+    categories = [None]*3
+    categories[0] = Categories()
+    categories[0].category = "Indumentaria"[:50].ljust(50, " ")
+    categories[0].count =0
+    categories[1] = Categories()
+    categories[1].category = "Comida"[:50].ljust(50, " ")
+    categories[1].count =0
+    categories[2] = Categories()
+    categories[2].category = "Perfumeria"[:50].ljust(50, " ")
+    categories[2].count =0
     #---------------------------------------
     user = Users()
     user.code = 2
@@ -166,6 +174,15 @@ def cleanWindow():
 def separation():
     print("-------------------------------------------------------------------------------------------------------------")
     
+def sortForCategories():
+    global categories
+    for i in range (0, 2):
+        for j in range(i+1, 3):
+            if(categories[i].count < categories[j].count):
+                aux = categories[i]
+                categories[i] = categories[j]
+                categories[j] = aux
+
 def validate_user(mail):
     global user, pointUser
     flag = False
@@ -595,8 +612,15 @@ def shopsMenu():
     global menu_admin
     shop_menu="1"
     separation()
-    while shop_menu != "0":
-        print("\na) Crear locales \nb) Modificar local \nc) Eliminar local \nd) Mapa de locales \ne) Volver")
+    while shop_menu != "0":        
+        print("\033[36m+---------------------+\033[0m")
+        print("\033[36m|\033[0m",categories[0].category[:15],":", categories[0].count,"\033[36m|\033[0m")
+        print("\033[36m+---------------------+\033[0m")
+        print("\033[36m|\033[0m",categories[1].category[:15],":", categories[1].count,"\033[36m|\033[0m")
+        print("\033[36m+---------------------+\033[0m")
+        print("\033[36m|\033[0m",categories[2].category[:15],":", categories[2].count,"\033[36m|\033[0m")
+        print("\033[36m+---------------------+\033[0m")
+        print("a) Crear locales \nb) Modificar local \nc) Eliminar local \nd) Mapa de locales \ne) Volver")
         shop_menu = input("\nIngrese sector de menu: ").lower()
         while shop_menu != "a" and shop_menu != "b" and shop_menu != "c" and shop_menu != "e" and shop_menu != "d":
             shop_menu=input("\nIngrese una de las opciones validas:").lower()
@@ -657,8 +681,6 @@ def formatEntity(typeEntity, entity):
         entity.dateSince = str(entity.dateSince)[:10]
         entity.dateUntil =  str(entity.dateUntil)[:10]
         entity.status = str(entity.status)[:10].ljust(10, " ")
-    if (typeEntity == "category"):
-        entity.category = str(entity.category)[:20].ljust(20, " ")
         
 #Procedimiento utilizado para la busqueda de un nombre repetido si existe
 def verifyName(nameShop):
@@ -724,13 +746,13 @@ def createShop():
             categoryShop=input("\nIngrese una de las opciones validas:")
         match categoryShop:
             case "1":
-                # increase("Indumentaria")
+                modifyCategory("increment","Indumentaria".ljust(50, " "))
                 shop.category ="Indumentaria"
             case "2":
-                # increase("Perfumeria")
+                modifyCategory("increment","Perfumeria".ljust(50, " "))
                 shop.category ="Perfumeria"
             case "3":
-                # increase("Comida")
+                modifyCategory("increment","Comida".ljust(50, " "))
                 shop.category ="Comida"
         #try
         ownerShop = int(input("Ingresar codigo del dueño del local: "))
@@ -746,22 +768,27 @@ def createShop():
         lfShops.flush()
         cleanWindow()
         sort_shops()
+        sortForCategories()
         nameShop = input(f"Ingresar nombre del local o * para culminar: ").ljust(50," ")
 
+def resetMap():
+    global aux
+    aux=[0,0,0,0,0]
+    aux[0] = colorizar_texto(str(aux[0]), "amarillo")
+    aux[1] = colorizar_texto(str(aux[0]), "amarillo")
+    aux[2] = colorizar_texto(str(aux[0]), "amarillo")
+    aux[3] = colorizar_texto(str(aux[0]), "amarillo")
+    aux[4] = colorizar_texto(str(aux[0]), "amarillo")
+
 def map():
-    global ffShops,lfShops
+    global ffShops,lfShops, aux
     cleanWindow()
     print("> MAPA DE LOCALES <") 
     exit=""
     while exit != "*":
         fil = 0
         col = 0
-        aux=[0,0,0,0,0]
-        aux[0] = colorizar_texto(str(aux[0]), "amarillo")
-        aux[1] = colorizar_texto(str(aux[0]), "amarillo")
-        aux[2] = colorizar_texto(str(aux[0]), "amarillo")
-        aux[3] = colorizar_texto(str(aux[0]), "amarillo")
-        aux[4] = colorizar_texto(str(aux[0]), "amarillo")
+        resetMap()
         lim = os.path.getsize(ffShops)
         lfShops.seek(0)
         while fil < 10:
@@ -777,20 +804,10 @@ def map():
                     col = col +1
                 print("+-+-+-+-+-+")
                 print(f"|{aux[0]}|{aux[1]}|{aux[2]}|{aux[3]}|{aux[4]}|")
-                aux=[0,0,0,0,0]
-                aux[0] = colorizar_texto(str(aux[0]), "amarillo")
-                aux[1] = colorizar_texto(str(aux[0]), "amarillo")
-                aux[2] = colorizar_texto(str(aux[0]), "amarillo")
-                aux[3] = colorizar_texto(str(aux[0]), "amarillo")
-                aux[4] = colorizar_texto(str(aux[0]), "amarillo")
+                resetMap()
                 col = 0
                 fil = fil +1
-            aux=[0,0,0,0,0]
-            aux[0] = colorizar_texto(str(aux[0]), "amarillo")
-            aux[1] = colorizar_texto(str(aux[0]), "amarillo")
-            aux[2] = colorizar_texto(str(aux[0]), "amarillo")
-            aux[3] = colorizar_texto(str(aux[0]), "amarillo")
-            aux[4] = colorizar_texto(str(aux[0]), "amarillo")
+            resetMap()
             fil = fil +1
             print("+-+-+-+-+-+")
             print(f"|{aux[0]}|{aux[1]}|{aux[2]}|{aux[3]}|{aux[4]}|")
@@ -814,16 +831,14 @@ def colorizar_texto(texto, color):
     return f"{colores[color]}{texto}{colores['reset']}"
 
 #Procedimiento que aumenta la cantidad de locales por rubro
-def increase(business):
+def modifyCategory(type,business):
+    global categories
     for k in range(0,3):
-        if businessShop[0][k] == business:
-            businessShop[1][k]=businessShop[1][k]+1
-            
-#Procedimiento que resta la cantidad de locales
-def decrease(businness):
-    for j in range(0,3):
-        if businessShop[0] == businness:
-            businessShop[1]=businessShop[1]-1
+        if categories[k].category == business:
+            if(type == "increment"):
+                categories[k].count=categories[k].count+1
+            else:
+                categories[k].count=categories[k].count-1
             
 def verify_shop(cod):
     global shop,ffShops, lfShops
@@ -852,13 +867,22 @@ def search_shop(cod):
     else:
         punShop = lfShops.tell()
     return punShop
-                
+
+def validateNum(mesage):
+    val = False
+    while val != True:
+        try:
+            num = int(input(mesage))
+            val = True
+        except:
+            print("!OPCION INVALIDA¡ El dato ingresado no es un numero, porfavor ingrese un numero")
+    return num
+
 #Procedimiento que modifica locales
 def modShop():
     global lfShops, ffShops
     showShops()
-    #try
-    codShop = int(input("Ingrese el codigo del local que quiere modificar o 0 para culminar: "))
+    codShop = validateNum("Ingrese el codigo del local que quiere modificar o 0 para culminar: ")
     while codShop != 0:
         repeat = verify_shop(codShop)
         while not repeat:
@@ -893,25 +917,26 @@ def modShop():
                     shop.location = new_location 
                 new_category = input(f"\nEl rubro actual del local es '{shop.category}',ingrese * para mantenerlo o cualquier tecla para cambiarlo: ").ljust(50, "a")
                 if new_category  != "*".ljust(50, " "):
+                    modifyCategory("decrement", shop.category)
                     print("\n1) Indumentaria \n2) Perfumeria \n3) Comida")
                     categoryShop = input("Ingresar numero del rubro del local: ")
                     while categoryShop != "1" and categoryShop != "2" and categoryShop != "3":
                         categoryShop=input("\nIngrese una de las opciones validas:")
                     match categoryShop:
                         case "1":
-                            # increase("Indumentaria")
+                            modifyCategory("increment", "Indumentaria".ljust(50, " "))
                             shop.category ="Indumentaria"
                         case "2":
-                            # increase("Perfumeria")
+                            modifyCategory("increment", "Perfumeria".ljust(50, " "))
                             shop.category ="Perfumeria"
                         case "3":
-                            # increase("Comida")
+                            modifyCategory("increment", "Comida".ljust(50, " "))
                             shop.category ="Comida"
-                new_owner = int(input(f"\nEl dueño actual del local es '{shop.codUser}',ingrese el nuevo codigo de dueño o de caso contrario ingrese 0: "))
+                new_owner = validateNum("\nEl dueño actual del local es {shop.codUser},ingrese el nuevo codigo de dueño o de caso contrario ingrese 0: ")
                 if (new_owner != 0):
                     exist = validate_owner(new_owner)
                     while exist == False:
-                        new_owner = int(input("El dueño que quiere ingresar no existe, ingrese un codigo del dueño del local valido: "))
+                        new_owner = validateNum("El dueño que quiere ingresar no existe, ingrese un codigo del dueño del local valido: ")
                         exist = validate_owner(new_owner)
                     shop.codUser = new_owner
                 formatEntity("shop", shop)
@@ -921,7 +946,8 @@ def modShop():
                 cleanWindow()
                 sort_shops()
                 showShops()
-        codShop = int(input("Ingrese el codigo del local que quiere modificar o 0 para culminar: "))
+                sortForCategories()
+        codShop = validateNum("Ingrese el codigo del local que quiere modificar o 0 para culminar: ")
     
 def deleteShop():
     global shop

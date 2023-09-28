@@ -30,23 +30,39 @@ class Promotions:
     def _init_(self):
         self.codPromo: 0
         self.textPromo: "0"
-        self.dateSince: "0"
-        self.dateUntil: "0"
+        self.dateSince: date
+        self.dateUntil: date
         self.weekDay: [0,0,0,0,0,0,0]
         self.status: "0"
         self.code: 0
+
+class usePromo:
+    def init(self):
+        self.codCli: 0
+        self.codProm: 0
+        self.date: date
+
+class Categories:
+    def _init_(self):
+        self.category: "0"
+        self.count: 0
       
 #Variables utilizadas globalmente en todo el programa.
 def openFiles():
-    global ffUsers, lfUsers, ffShops, lfShops,lfProm, ffProm
-    # ffUsers = "D:\\Gena\\TP1\\users.dat"
-    # ffShops = "D:\\Gena\\TP1\\shops.dat"
-    ffUsers = "C:\\Kevin\\TP1\\users.dat"
-    ffShops = "C:\\Kevin\\TP1\\shops.dat"
-    ffProm = "C:\\Kevin\\TP1\\promotions.dat"
+    global ffUsers, lfUsers, ffShops, lfShops,lfProm, ffProm, lfUseP, ffUseP
+    ffUsers = "D:\\Gena\\TP1\\users.dat"
+    ffShops = "D:\\Gena\\TP1\\shops.dat"
+    ffProm = "D:\\Gena\\TP1\\promotions.dat"
+    ffUseP = "D:\\Gena\\TP1\\usePromo.dat"
+    # ffUsers = "C:\\Kevin\\TP1\\users.dat"
+    # ffShops = "C:\\Kevin\\TP1\\shops.dat"
+    # ffProm = "C:\\Kevin\\TP1\\promotions.dat"
+    # ffUseP = "C:\\Kevin\\TP1\\usePromo.dat"
     # ffUsers = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\users.dat"
     # ffProm = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\promotions.dat"
     # ffShops = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\shops.dat"
+     # ffUseP = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\usePromo.dat"
+    lfUseP = open(ffUseP, "w+b")
     lfUsers = open(ffUsers, "w+b")
     lfProm = open(ffProm, "w+b")
     lfShops = open(ffShops, "w+b")
@@ -56,11 +72,12 @@ def closeFiles():
      lfShops.close()
 
 def inicialization():
-    global user ,ffUsers,lfUsers, count, type_menu, menu_admin, opcion_owner, opcion_customer, totalShops, businessShop, code, user, shop, promo, pointUser
+    global user ,ffUsers,lfUsers, count, type_menu, menu_admin, opcion_owner, opcion_customer, totalShops, businessShop, code, user, shop, promo, pointUser, useP
     openFiles()
     shop = Shops()
     promo = Promotions()
     user = Users()
+    useP = usePromo()
     user.code = 1
     user.user = "admin"
     user.key = "12345"
@@ -68,6 +85,67 @@ def inicialization():
     formatEntity("user", user)
     pickle.dump(user,lfUsers)
     lfUsers.flush()
+    #---------------------------------------
+    categories = [None]*9
+
+    #---------------------------------------
+    user = Users()
+    user.code = 2
+    user.user = "dueño"
+    user.key = "123"
+    user.type = "dueño"
+    formatEntity("user", user)
+    pickle.dump(user,lfUsers)
+    lfUsers.flush()
+    #---------------------------------------
+    user.code = 3
+    user.user = "cliente"
+    user.key = "123"
+    user.type = "cliente"
+    formatEntity("user", user)
+    pickle.dump(user,lfUsers)
+    lfUsers.flush()
+    #---------------------------------------
+    shop.code=1
+    shop.name= "shop1"
+    shop.location= "rosario"
+    shop.category= "Indumentaria"
+    shop.codUser=2
+    shop.status= "A"
+    formatEntity("shop", shop)
+    pickle.dump(shop,lfShops)
+    lfShops.flush()
+    shop.code=2
+    shop.name= "shop2"
+    shop.location= "reconquista"
+    shop.category= "Comida"
+    shop.codUser=2
+    shop.status= "A"
+    formatEntity("shop", shop)
+    pickle.dump(shop,lfShops)
+    lfShops.flush()
+    #---------------------------------------
+    promo.codPromo= 1
+    promo.textPromo= "20% descuento papu"
+    promo.dateSince= datetime.strptime("28-09-2023", "%d-%m-%Y").date()
+    promo.dateUntil= datetime.strptime("28-10-2023", "%d-%m-%Y").date()
+    promo.weekDay= [1,1,1,1,1,1,1]
+    promo.status= "Aprobada"
+    promo.code= 1
+    formatEntity("promo", promo)
+    pickle.dump(promo,lfProm)
+    lfProm.flush()
+    promo.codPromo= 2
+    promo.textPromo= "80% descuento papu"
+    promo.dateSince= datetime.strptime("28-09-2023", "%d-%m-%Y").date()
+    promo.dateUntil= datetime.strptime("28-10-2023", "%d-%m-%Y").date()
+    promo.weekDay= [1,1,1,1,1,1,1]
+    promo.status= "Pendiente"
+    promo.code= 1
+    formatEntity("promo", promo)
+    pickle.dump(promo,lfProm)
+    lfProm.flush()
+    #---------------------------------------
     totalShops = 0
     count = 3
     code = 0
@@ -76,7 +154,6 @@ def inicialization():
     opcion_owner= "1"
     opcion_customer= "1"
     menu_admin = "1"
-    businessShop=[["Indumentaria", "Perfumeria", "Comida"], [0,0,0]]
 
 #Procedimieno que dependiendo del sistema operativo limpia la terminal
 def cleanWindow():
@@ -176,11 +253,11 @@ def menu_customer():
                 print("Saliste del programa.")
             case "1":
                 cleanWindow()
-                print("En construccion...")
+                promo_customer()
                 separation()
             case "2":
                 cleanWindow()
-                print("En construccion...")
+                request_prom()
                 separation()
             case "3":
                 cleanWindow()
@@ -287,21 +364,142 @@ def menu_owner():
                 print("Diagramado en chapín")
                 separation()
 
-def search_prom(code):
+def search_prom(code, status):
     global lfProm, ffProm, promo
     flag = False
     limProm = os.path.getsize(ffProm)
     lfProm.seek(0)
     while lfProm.tell() < limProm and flag == False :
+        print("nico")
         point_prom = lfProm.tell()
         promo = pickle.load(lfProm)
-        if promo.codPromo == code and promo.status == "Pendiente".ljust(10, " "):
+        print(promo.codPromo)
+        if promo.codPromo == code and promo.status == status.ljust(10, " "):
             point = point_prom
             flag = True
+        elif promo.codPromo == code and promo.status != status.ljust(10, " "):
+            point = -2
+            flag = True
         else:
-            point = -1
+            point = -3
     return point
+
+def reportProm():
+    lfProm,ffProm,lfUseP,ffUseP,lfShops,ffShops
+    promo = Promotions()
+    shop = Shops()
+    useP = usePromo()
+    dateMin = input("Ingrese la fecha minima de las promociones que desea ver (dd-mm-aaaa): ")
+    dateSin= datetime.strptime(dateMin, "%d-%m-%Y").date()
+    dateMax = input("Ingrese la fecha maxima de las promociones que deseas ver (dd-mm-aaaa): ")
+    dateUnt = datetime.strptime(dateMax, "%d-%m-%Y").date()
+    limProm = os.path.getsize(ffProm)
+    lfProm.seek(0)
+    while lfProm.tell() < limProm:
+        point_prom = lfProm.tell()
+        promo = pickle.load(lfProm)
+        if promo.status == "Aprobada".ljust(10, " "):
+            since = datetime.strptime(promo.dateSince, "%Y-%m-%d").date()
+            until = datetime.strptime(promo.dateUntil, "%Y-%m-%d").date()
+            if since >= dateSin and until <= dateUnt:
+                pun_shop = search_shop(promo.code)
+                lfShops.seek(pun_shop)
+                shop = pickle.load(lfShops)
+                countUse = 0
+                limUse = os.path.getsize(ffUseP)
+                lfUseP.seek(0)
+                while lfUseP.tell() < limUse:
+                    useP = pickle.load(lfUseP)
+                    if useP.codProm == promo.codPromo:
+                        countUse = countUse + 1
+                print("+-----------------------------------------------------------------------------------------------------------+")
+                print(f"CODIGO DE PROMO: {promo.codPromo}\nDESCRIPCIÓN: {promo.textPromo}\nFECHA DE INCICIO: {promo.dateSince}\nFECHA DE FINALIZACIÓN: {promo.dateUntil}\nDÍAS DE DESCUENTO: \nLUNES:{promo.weekDay[0]} \nMARTES:{promo.weekDay[1]} \nMIERCOLES:{promo.weekDay[2]} \nJUEVES:{promo.weekDay[3]} \nVIERNES:{promo.weekDay[4]} \nSABADO:{promo.weekDay[5]} \nDOMINGO:{promo.weekDay[6]}  \nESTADO: {promo.status} \nCODIGO LOCAL:{promo.code} \nNOMBRE DEL LOCAL:{shop.name} \nCANTIDAD DE USOS DE ESTA PROMO: {countUse} ")
+                print("+-----------------------------------------------------------------------------------------------------------+")
+
+def shopPromDate(codShop, date):
+    global ffProm,lfProm, promo
+    limProm = os.path.getsize(ffProm)
+    auxArr = ["Monday","Tuesday","Wednesday","Thursday", "Friday", "Saturday", "Sunday"]
+    auxDay = datetime.strftime(date,"%A")
+    auxPosition= 0
+    for i in range(0,7):
+        if auxArr[i] == auxDay:
+            auxPosition = i
+    if limProm != 0:
+        lfProm.seek(0) 
+        while lfProm.tell() < limProm:
+            promo = pickle.load(lfProm)
+            dateSince = datetime.strptime(promo.dateSince, "%Y-%m-%d").date()
+            dateUntil = datetime.strptime(promo.dateUntil, "%Y-%m-%d").date()
+            if promo.status == "Aprobada".ljust(10, " ") and date >= dateSince and date <= dateUntil and promo.weekDay[auxPosition] == 1:
+                print("+-----------------------------------------------------------------------------------------------------------+")
+                print(f"CODIGO DE PROMO: {promo.codPromo}\nDESCRIPCIÓN: {promo.textPromo}\nFECHA DE INCICIO: {promo.dateSince}\nFECHA DE FINALIZACIÓN: {promo.dateUntil}\n")
+                print("+-----------------------------------------------------------------------------------------------------------+")
+    else:
+        print(f"No hay promociones cargadas hasta el momento en el local {codShop}.")   
             
+def promo_customer():
+        global ffProm, lfProm
+        aux = " "
+        while aux != "*":
+            print("Ingese el codigo del local  y el dia del cual quiere saber sus promociones.")
+            print("!ATENCION¡ El local debe existir y el dia debe ser posterior o igual al actual")
+            codShop = int(input("Codigo del local: "))
+            exist = verify_shop(codShop)
+            while exist != True:
+                codShop = int(input("!OPCION INVALIDA¡ Ingresar un codigo de local existente: "))
+                exist = verify_shop(codShop)
+            auxDate = input("fecha(dd-mm-aaaa): ")
+            promDate= datetime.strptime(auxDate, "%d-%m-%Y").date()
+            today = date.today()
+            while promDate < today:
+                print("!OPCION INVALIDA¡ Ingresar una fecha valida(dd-mm-aaaa): ")
+                auxDate = input("fecha(dd-mm-aaaa): ")
+                promDate= datetime.strptime(auxDate, "%d-%m-%Y").date()
+            shopPromDate(codShop, promDate)
+            aux = input("Ingrese * para salir o cualquier tecla para volver a ver: ")
+            cleanWindow()
+
+def request_prom():
+    lfProm, lfProm,pointUser, lfUseP,ffUseP, 
+    user = Users()
+    useP = usePromo()
+    codProm = int(input("Ingrese el codigo de la promocion que quiere usar o 0 para salir: "))
+    while codProm != 0:
+        point_prom = search_prom(codProm,"Aprobada")
+        while (point_prom == -2 and  codProm != 0) or (point_prom == -3 and codProm != 0):
+                if point_prom == -2 and codProm != 0:
+                    codProm = int(input("El codigo de promo el cual usted esta ingresando no esta aprobado, ingrese uno valido o '0' pasa salir: "))
+                    point_prom = search_prom(codProm, "Aprobada")
+                elif point_prom == -3 and codProm != 0:
+                    codProm = int(input("El codigo de promo el cual usted esta ingresando no se encuentra en el sistema, ingrese uno valido o '0' pasa salir: "))
+                    point_prom = search_prom(codProm, "Aprobada")
+        if codProm != 0:
+            promo = Promotions()
+            lfProm.seek(point_prom)
+            promo = pickle.load(lfProm)
+            since = datetime.strptime(promo.dateSince, "%Y-%m-%d").date()
+            until = datetime.strptime(promo.dateUntil, "%Y-%m-%d").date()
+            if date.today() >= since and date.today() <= until:
+                auxArr = ["Monday","Tuesday","Wednesday","Thursday", "Friday", "Saturday", "Sunday"]
+                auxDay = datetime.today().strftime("%A")
+                auxPosition= 0
+                for i in range(0,7):
+                    if auxArr[i] == auxDay:
+                        auxPosition = i
+                if promo.weekDay[auxPosition] == 1:
+                    lfUsers.seek(pointUser)
+                    user = pickle.load(lfUsers)
+                    useP.codCli = user.code
+                    useP.codProm = codProm
+                    useP.date = date.today()
+                    pickle.dump(useP,lfUseP)
+                    lfUseP.flush()
+                else:
+                    print("Esta promocion no se puede aplicar el dia de hoy")
+            else:
+                print("La promo esta fuera de fecha")
+            codProm = int(input("Ingrese el codigo de la promocion que quiere usar o 0 para salir: "))
         
 def approveProm():
     global ffProm,lfProm, promo, lfUsers,ffUsers, shop, lfProm
@@ -318,19 +516,22 @@ def approveProm():
                 print(f"CODIGO DE PROMO: {promo.codPromo}\nDESCRIPCIÓN: {promo.textPromo}\nFECHA DE INCICIO: {promo.dateSince}\nFECHA DE FINALIZACIÓN: {promo.dateUntil}\nDÍAS DE DESCUENTO: \nLUNES:{promo.weekDay[0]} \nMARTES:{promo.weekDay[1]} \nMIERCOLES:{promo.weekDay[2]} \nJUEVES:{promo.weekDay[3]} \nVIERNES:{promo.weekDay[4]} \nSABADO:{promo.weekDay[5]} \nDOMINGO:{promo.weekDay[6]}  \nESTADO: {promo.status} \nCODIGO LOCAL:{promo.code} \nNOMBRE DEL LOCAL:{shop.name}")
                 print("+-----------------------------------------------------------------------------------------------------------+")
         mod_prom = int(input("Ingrese el codigo de la promo la cual quiere rechazar/aceptar o 0 para salir: "))
-        point_prom = search_prom(mod_prom)
-        while point_prom == -1 and mod_prom != 0:
-            mod_prom = int(input("Ingrese el codigo de la promo la cual quiere rechazar/aceptar o presione 0 para salir: "))
-            point_prom = search_prom(mod_prom)
-        if point_prom != -1 and mod_prom != 0:
+        point_prom = search_prom(mod_prom,"Pendiente")
+        while (point_prom == -2 and  mod_prom != 0) or (point_prom == -3 and mod_prom != 0):
+            if point_prom == -2 and mod_prom != 0:
+                mod_prom = int(input("El codigo de promo el cual usted esta ingresando no se encuentra en estado de 'pendiente', ingrese uno valido o '0' pasa salir: "))
+                point_prom = search_prom(mod_prom, "Pendiente")
+            elif point_prom == -3 and mod_prom != 0:
+                mod_prom = int(input("El codigo de promo el cual usted esta ingresando no se encuentra en el sistema, ingrese uno valido o '0' pasa salir: "))
+                point_prom = search_prom(mod_prom, "Pendiente")
+        if mod_prom != 0 and point_prom != -2 and point_prom != -3 :
             lfProm.seek(point_prom)
             promo = pickle.load(lfProm)
-            print(promo.codPromo)
             auxStatus = input("Ingrese 'R' si no acepta la promo o 'A' si la acepta: ")
             while auxStatus.lower() != "a" and auxStatus.lower() != "r":
                 auxStatus = input("Ingrese una de las opciones validas: ")
             if auxStatus.lower() == "a":
-                promo.status = "Aceptado".ljust(10, " ")
+                promo.status = "Aprobada".ljust(10, " ")
             if auxStatus.lower() == "r":
                 promo.status = "Rechazado".ljust(10, " ")
             formatEntity("promo", promo)
@@ -368,7 +569,7 @@ def menu():
                 news()
             case "5":
                 cleanWindow()
-                print("En construccion...")
+                reportProm()
                 separation()
 
 #Procedimiento que muestra el menu para administrar las novedades
@@ -456,6 +657,8 @@ def formatEntity(typeEntity, entity):
         entity.dateSince = str(entity.dateSince)[:10]
         entity.dateUntil =  str(entity.dateUntil)[:10]
         entity.status = str(entity.status)[:10].ljust(10, " ")
+    if (typeEntity == "category"):
+        entity.category = str(entity.category)[:20].ljust(20, " ")
         
 #Procedimiento utilizado para la busqueda de un nombre repetido si existe
 def verifyName(nameShop):

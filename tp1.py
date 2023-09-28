@@ -335,20 +335,20 @@ def createProm():
         auxDay= ["Lunes","Martes","Miercoles","Jueves","Viernes","Sabado","Domingo"]
         for i in range (0,7):
             print(f"Día {auxDay[i]}")
-            auxDays = int(input("Ingrese 1 o 0: "))
+            auxDays = validateNum("Ingrese 1 o 0: ")
             while auxDays != 1 and auxDays != 0:
-                auxDays = int(input("La opcion que ingreso no corresponde, ingrese una de las opciones validas 1 o 0: "))
+                auxDays = validateNum("La opcion que ingreso no corresponde, ingrese una de las opciones validas 1 o 0: ")
             auxWeek[i] = auxDays
         promo.weekDay = auxWeek
         promo.status = "Pendiente"
-        auxCodShop = int(input("Ingrese el codigo del local al cual le quiere aplicar la promocion: "))
+        auxCodShop = validateNum("Ingrese el codigo del local al cual le quiere aplicar la promocion: ")
         codFlag = False
         while codFlag == False: 
             lfUsers.seek(pointUser)
             user = pickle.load(lfUsers)
             codFlag = verifyCode(auxCodShop,user.code)
             if codFlag == False:
-                auxCodShop = int(input("El codigo del local que ingreso no es valido, por favor ingrese otro: "))
+                auxCodShop = validateNum("El codigo del local que ingreso no es valido, por favor ingrese otro: ")
         promo.code = auxCodShop
         formatEntity("promo", promo)
         pickle.dump(promo,lfProm)
@@ -461,10 +461,10 @@ def promo_customer():
         while aux != "*":
             print("Ingese el codigo del local  y el dia del cual quiere saber sus promociones.")
             print("!ATENCION¡ El local debe existir y el dia debe ser posterior o igual al actual")
-            codShop = int(input("Codigo del local: "))
+            codShop = validateNum("Codigo del local: ")
             exist = verify_shop(codShop)
             while exist != True:
-                codShop = int(input("!OPCION INVALIDA¡ Ingresar un codigo de local existente: "))
+                codShop = validateNum("!OPCION INVALIDA¡ Ingresar un codigo de local existente: ")
                 exist = verify_shop(codShop)
             auxDate = input("fecha(dd-mm-aaaa): ")
             promDate= datetime.strptime(auxDate, "%d-%m-%Y").date()
@@ -481,15 +481,15 @@ def request_prom():
     lfProm, lfProm,pointUser, lfUseP,ffUseP, 
     user = Users()
     useP = usePromo()
-    codProm = int(input("Ingrese el codigo de la promocion que quiere usar o 0 para salir: "))
+    codProm = validateNum("Ingrese el codigo de la promocion que quiere usar o 0 para salir: ")
     while codProm != 0:
         point_prom = search_prom(codProm,"Aprobada")
         while (point_prom == -2 and  codProm != 0) or (point_prom == -3 and codProm != 0):
                 if point_prom == -2 and codProm != 0:
-                    codProm = int(input("El codigo de promo el cual usted esta ingresando no esta aprobado, ingrese uno valido o '0' pasa salir: "))
+                    codProm = validateNum("El codigo de promo el cual usted esta ingresando no esta aprobado, ingrese uno valido o '0' pasa salir: ")
                     point_prom = search_prom(codProm, "Aprobada")
                 elif point_prom == -3 and codProm != 0:
-                    codProm = int(input("El codigo de promo el cual usted esta ingresando no se encuentra en el sistema, ingrese uno valido o '0' pasa salir: "))
+                    codProm = validateNum("El codigo de promo el cual usted esta ingresando no se encuentra en el sistema, ingrese uno valido o '0' pasa salir: ")
                     point_prom = search_prom(codProm, "Aprobada")
         if codProm != 0:
             promo = Promotions()
@@ -516,7 +516,7 @@ def request_prom():
                     print("Esta promocion no se puede aplicar el dia de hoy")
             else:
                 print("La promo esta fuera de fecha")
-            codProm = int(input("Ingrese el codigo de la promocion que quiere usar o 0 para salir: "))
+            codProm = validateNum("Ingrese el codigo de la promocion que quiere usar o 0 para salir: ")
         
 def approveProm():
     global ffProm,lfProm, promo, lfUsers,ffUsers, shop, lfProm
@@ -532,14 +532,14 @@ def approveProm():
                 print("+-----------------------------------------------------------------------------------------------------------+")
                 print(f"CODIGO DE PROMO: {promo.codPromo}\nDESCRIPCIÓN: {promo.textPromo}\nFECHA DE INCICIO: {promo.dateSince}\nFECHA DE FINALIZACIÓN: {promo.dateUntil}\nDÍAS DE DESCUENTO: \nLUNES:{promo.weekDay[0]} \nMARTES:{promo.weekDay[1]} \nMIERCOLES:{promo.weekDay[2]} \nJUEVES:{promo.weekDay[3]} \nVIERNES:{promo.weekDay[4]} \nSABADO:{promo.weekDay[5]} \nDOMINGO:{promo.weekDay[6]}  \nESTADO: {promo.status} \nCODIGO LOCAL:{promo.code} \nNOMBRE DEL LOCAL:{shop.name}")
                 print("+-----------------------------------------------------------------------------------------------------------+")
-        mod_prom = int(input("Ingrese el codigo de la promo la cual quiere rechazar/aceptar o 0 para salir: "))
+        mod_prom = validateNum("Ingrese el codigo de la promo la cual quiere rechazar/aceptar o 0 para salir: ")
         point_prom = search_prom(mod_prom,"Pendiente")
         while (point_prom == -2 and  mod_prom != 0) or (point_prom == -3 and mod_prom != 0):
             if point_prom == -2 and mod_prom != 0:
-                mod_prom = int(input("El codigo de promo el cual usted esta ingresando no se encuentra en estado de 'pendiente', ingrese uno valido o '0' pasa salir: "))
+                mod_prom = validateNum("El codigo de promo el cual usted esta ingresando no se encuentra en estado de 'pendiente', ingrese uno valido o '0' pasa salir: ")
                 point_prom = search_prom(mod_prom, "Pendiente")
             elif point_prom == -3 and mod_prom != 0:
-                mod_prom = int(input("El codigo de promo el cual usted esta ingresando no se encuentra en el sistema, ingrese uno valido o '0' pasa salir: "))
+                mod_prom = validateNum("El codigo de promo el cual usted esta ingresando no se encuentra en el sistema, ingrese uno valido o '0' pasa salir: ")
                 point_prom = search_prom(mod_prom, "Pendiente")
         if mod_prom != 0 and point_prom != -2 and point_prom != -3 :
             lfProm.seek(point_prom)
@@ -755,11 +755,11 @@ def createShop():
                 modifyCategory("increment","Comida".ljust(50, " "))
                 shop.category ="Comida"
         #try
-        ownerShop = int(input("Ingresar codigo del dueño del local: "))
+        ownerShop = validateNum("Ingresar codigo del dueño del local: ")
         exist = validate_owner(ownerShop)
         while exist == False:
             #try
-            ownerShop = int(input("Ingresar codigo del dueño del local: "))
+            ownerShop = validateNum("Ingresar codigo del dueño del local: ")
             exist = validate_owner(ownerShop)
         shop.codUser = ownerShop
         shop.status = "A"
@@ -887,7 +887,7 @@ def modShop():
         repeat = verify_shop(codShop)
         while not repeat:
             print(f"El codigo {codShop} no se encuentra en el sistema")
-            codShop = int(input(f"Ingrese el codigo del local o 0 para culminar: "))
+            codShop = validateNum("Ingrese el codigo del local o 0 para culminar: ")
             if codShop == 0:
                 repeat = True
             else:
@@ -952,7 +952,7 @@ def modShop():
 def deleteShop():
     global shop
     showShops()
-    codShop = int(input("Ingrese el codigo del local que desea dar de BAJA o 0 para salir: "))
+    codShop = validateNum("Ingrese el codigo del local que desea dar de BAJA o 0 para salir: ")
     if(codShop != 0):
         exist = verify_shop(codShop)
         if(exist == True):

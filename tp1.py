@@ -148,8 +148,8 @@ def inicialization():
     promo.dateSince= datetime.strptime("28-09-2023", "%d-%m-%Y").date()
     promo.dateUntil= datetime.strptime("28-10-2023", "%d-%m-%Y").date()
     promo.weekDay= [1,1,1,1,1,1,1]
-    promo.status= "Pendiente"
-    promo.code= 1
+    promo.status= "Aprobada"
+    promo.code= 2
     formatEntity("promo", promo)
     pickle.dump(promo,lfProm)
     lfProm.flush()
@@ -306,7 +306,18 @@ def showProm(point):
                 print(f"CODIGO DE PROMO: {promo.codPromo}\nDESCRIPCIÓN: {promo.textPromo}\nFECHA DE INCICIO: {promo.dateSince}\nFECHA DE FINALIZACIÓN: {promo.dateUntil}\nDÍAS DE DESCUENTO: \nLUNES:{promo.weekDay[0]} \nMARTES:{promo.weekDay[1]} \nMIERCOLES:{promo.weekDay[2]} \nJUEVES:{promo.weekDay[3]} \nVIERNES:{promo.weekDay[4]} \nSABADO:{promo.weekDay[5]} \nDOMINGO:{promo.weekDay[6]}  \nESTADO: {promo.status} \nCODIGO LOCAL:{promo.code}")
                 print("+-----------------------------------------------------------------------------------------------------------+")
     else:
-        print("No hay promociones cargadas hasta el momento.")   
+        print("No hay promociones cargadas hasta el momento.")
+
+def validateDate(mesage):
+    val = False
+    while val != True:
+        try:
+            date = input(mesage)
+            dateVal = datetime.strptime(date, "%d-%m-%Y").date()
+            val = True
+        except:
+            print("!DATO INVALIDO¡ Debe ingresar una fecha valida en formato(dd-mm-aaaa)")
+    return dateVal
               
 def createProm():
     global pointUser
@@ -318,11 +329,8 @@ def createProm():
         flag = False
         promo.codPromo = count_entity("promo")
         while flag == False:
-            #try
-            dateSince = input("Ingrese fecha de comienzo de la promocion (dd-mm-aaaa): ")
-            dateSin= datetime.strptime(dateSince, "%d-%m-%Y").date()
-            dateUntil = input("Ingrese fecha de culminacion de la promocion (dd-mm-aaaa): ")
-            dateUnt = datetime.strptime(dateUntil, "%d-%m-%Y").date()
+            dateSin = validateDate("Ingrese fecha de comienzo de la promocion (dd-mm-aaaa): ")
+            dateUnt = validateDate("Ingrese fecha de culminacion de la promocion (dd-mm-aaaa): ")
             today = date.today()
             if dateSin <= dateUnt and dateSin >= today:
                 flag = True
@@ -342,13 +350,12 @@ def createProm():
         promo.weekDay = auxWeek
         promo.status = "Pendiente"
         auxCodShop = validateNum("Ingrese el codigo del local al cual le quiere aplicar la promocion: ")
-        codFlag = False
+        lfUsers.seek(pointUser)
+        user = pickle.load(lfUsers)
+        codFlag = verifyCode(auxCodShop,user.code)
         while codFlag == False: 
-            lfUsers.seek(pointUser)
-            user = pickle.load(lfUsers)
-            codFlag = verifyCode(auxCodShop,user.code)
-            if codFlag == False:
                 auxCodShop = validateNum("El codigo del local que ingreso no es valido, por favor ingrese otro: ")
+                codFlag = verifyCode(auxCodShop,user.code)
         promo.code = auxCodShop
         formatEntity("promo", promo)
         pickle.dump(promo,lfProm)
@@ -374,7 +381,7 @@ def menu_owner():
                 separation()
             case "2":
                 cleanWindow()
-                print("En construccion...")
+                reportPromDu()
                 separation()
             case "3":
                 cleanWindow()
@@ -387,10 +394,8 @@ def search_prom(code, status):
     limProm = os.path.getsize(ffProm)
     lfProm.seek(0)
     while lfProm.tell() < limProm and flag == False :
-        print("nico")
         point_prom = lfProm.tell()
         promo = pickle.load(lfProm)
-        print(promo.codPromo)
         if promo.codPromo == code and promo.status == status.ljust(10, " "):
             point = point_prom
             flag = True
@@ -401,37 +406,82 @@ def search_prom(code, status):
             point = -3
     return point
 
-def reportProm():
+def reportPromDu():
+    lfProm,ffProm,lfUseP,ffUseP,lfShops,ffShops, pointUser,lfUsers
+    promo = Promotions()
+    shop = Shops()
+    useP = usePromo()
+    aux = " "
+    while aux != "*":
+        dateSin= validateDate("Ingrese la fecha minima de las promociones que desea ver (dd-mm-aaaa): ")
+        dateUnt = validateDate("Ingrese la fecha maxima de las promociones que deseas ver (dd-mm-aaaa): ")
+        limShop = os.path.getsize(ffShops)
+        lfShops.seek(0)
+        lfUsers.seek(pointUser)
+        user = pickle.load(lfUsers)
+        while lfShops.tell() < limShop:
+            shop = pickle.load(lfShops)
+            if shop.codUser == user.code:
+                limProm = os.path.getsize(ffProm)
+                lfProm.seek(0)
+                print("+-----------------------------------------------------------------------------------------------------------+")
+                print(f"Local {shop.code}: {shop.name}")
+                print(f"Fecha desde: {dateSin}                                   Fecha hasta: {dateUnt}")
+                while lfProm.tell() < limProm:
+                    promo = pickle.load(lfProm)
+                    if promo.code == shop.code:
+                        since = datetime.strptime(promo.dateSince, "%Y-%m-%d").date()
+                        until = datetime.strptime(promo.dateUntil, "%Y-%m-%d").date()
+                        if since >= dateSin and until <= dateUnt:
+                            countUse = 0
+                            limUse = os.path.getsize(ffUseP)
+                            lfUseP.seek(0)
+                            while lfUseP.tell() < limUse:
+                                useP = pickle.load(lfUseP)
+                                if useP.codProm == promo.codPromo:
+                                    countUse = countUse + 1
+                            print("+-----------------------------------------------------------------------------------------------------------+")
+                            print(f"CODIGO DE PROMO: {promo.codPromo}\nDESCRIPCIÓN: {promo.textPromo}\nFECHA DE INCICIO: {promo.dateSince}\nFECHA DE FINALIZACIÓN: {promo.dateUntil}\n CANTIDAD DE USOS DE ESTA PROMO: {countUse} ")
+                            print("+-----------------------------------------------------------------------------------------------------------+")
+                        else:
+                            print("+-----------------------------------------------------------------------------------------------------------+")
+                            print("Este local no tiene promociones en las fechas indicadas")
+                            print("+-----------------------------------------------------------------------------------------------------------+")            
+        aux = input("Ingrese * para salir o cualquier otra letra si quiere verificar otra fecha: ")
+
+def reportPromAd():
     lfProm,ffProm,lfUseP,ffUseP,lfShops,ffShops
     promo = Promotions()
     shop = Shops()
     useP = usePromo()
-    dateMin = input("Ingrese la fecha minima de las promociones que desea ver (dd-mm-aaaa): ")
-    dateSin= datetime.strptime(dateMin, "%d-%m-%Y").date()
-    dateMax = input("Ingrese la fecha maxima de las promociones que deseas ver (dd-mm-aaaa): ")
-    dateUnt = datetime.strptime(dateMax, "%d-%m-%Y").date()
-    limProm = os.path.getsize(ffProm)
-    lfProm.seek(0)
-    while lfProm.tell() < limProm:
-        point_prom = lfProm.tell()
-        promo = pickle.load(lfProm)
-        if promo.status == "Aprobada".ljust(10, " "):
-            since = datetime.strptime(promo.dateSince, "%Y-%m-%d").date()
-            until = datetime.strptime(promo.dateUntil, "%Y-%m-%d").date()
-            if since >= dateSin and until <= dateUnt:
-                pun_shop = search_shop(promo.code)
-                lfShops.seek(pun_shop)
-                shop = pickle.load(lfShops)
-                countUse = 0
-                limUse = os.path.getsize(ffUseP)
-                lfUseP.seek(0)
-                while lfUseP.tell() < limUse:
-                    useP = pickle.load(lfUseP)
-                    if useP.codProm == promo.codPromo:
-                        countUse = countUse + 1
-                print("+-----------------------------------------------------------------------------------------------------------+")
-                print(f"CODIGO DE PROMO: {promo.codPromo}\nDESCRIPCIÓN: {promo.textPromo}\nFECHA DE INCICIO: {promo.dateSince}\nFECHA DE FINALIZACIÓN: {promo.dateUntil}\nDÍAS DE DESCUENTO: \nLUNES:{promo.weekDay[0]} \nMARTES:{promo.weekDay[1]} \nMIERCOLES:{promo.weekDay[2]} \nJUEVES:{promo.weekDay[3]} \nVIERNES:{promo.weekDay[4]} \nSABADO:{promo.weekDay[5]} \nDOMINGO:{promo.weekDay[6]}  \nESTADO: {promo.status} \nCODIGO LOCAL:{promo.code} \nNOMBRE DEL LOCAL:{shop.name} \nCANTIDAD DE USOS DE ESTA PROMO: {countUse} ")
-                print("+-----------------------------------------------------------------------------------------------------------+")
+    aux = ""
+    while aux != "*":
+        dateSin= validateDate("Ingrese la fecha minima de las promociones que desea ver (dd-mm-aaaa): ")
+        dateUnt = validateDate("Ingrese la fecha maxima de las promociones que deseas ver (dd-mm-aaaa): ")
+        limProm = os.path.getsize(ffProm)
+        lfProm.seek(0)
+        while lfProm.tell() < limProm:
+            point_prom = lfProm.tell()
+            promo = pickle.load(lfProm)
+            if promo.status == "Aprobada".ljust(10, " "):
+                since = datetime.strptime(promo.dateSince, "%Y-%m-%d").date()
+                until = datetime.strptime(promo.dateUntil, "%Y-%m-%d").date()
+                if since >= dateSin and until <= dateUnt:
+                    pun_shop = search_shop(promo.code)
+                    lfShops.seek(pun_shop)
+                    shop = pickle.load(lfShops)
+                    countUse = 0
+                    limUse = os.path.getsize(ffUseP)
+                    lfUseP.seek(0)
+                    while lfUseP.tell() < limUse:
+                        useP = pickle.load(lfUseP)
+                        if useP.codProm == promo.codPromo:
+                            countUse = countUse + 1
+                    print("+-----------------------------------------------------------------------------------------------------------+")
+                    print(f"CODIGO DE PROMO: {promo.codPromo}\nDESCRIPCIÓN: {promo.textPromo}\nFECHA DE INCICIO: {promo.dateSince}\nFECHA DE FINALIZACIÓN: {promo.dateUntil}\nDÍAS DE DESCUENTO: \nLUNES:{promo.weekDay[0]} \nMARTES:{promo.weekDay[1]} \nMIERCOLES:{promo.weekDay[2]} \nJUEVES:{promo.weekDay[3]} \nVIERNES:{promo.weekDay[4]} \nSABADO:{promo.weekDay[5]} \nDOMINGO:{promo.weekDay[6]}  \nESTADO: {promo.status} \nCODIGO LOCAL:{promo.code} \nNOMBRE DEL LOCAL:{shop.name} \nCANTIDAD DE USOS DE ESTA PROMO: {countUse} ")
+                    print("+-----------------------------------------------------------------------------------------------------------+")
+        aux = input("Si desea volver ingrese * sino ingrese cualquier tecla: ")
+    cleanWindow()
 
 def shopPromDate(codShop, date):
     global ffProm,lfProm, promo
@@ -448,7 +498,7 @@ def shopPromDate(codShop, date):
             promo = pickle.load(lfProm)
             dateSince = datetime.strptime(promo.dateSince, "%Y-%m-%d").date()
             dateUntil = datetime.strptime(promo.dateUntil, "%Y-%m-%d").date()
-            if promo.status == "Aprobada".ljust(10, " ") and date >= dateSince and date <= dateUntil and promo.weekDay[auxPosition] == 1:
+            if codShop == promo.code and promo.status == "Aprobada".ljust(10, " ") and date >= dateSince and date <= dateUntil and promo.weekDay[auxPosition] == 1:
                 print("+-----------------------------------------------------------------------------------------------------------+")
                 print(f"CODIGO DE PROMO: {promo.codPromo}\nDESCRIPCIÓN: {promo.textPromo}\nFECHA DE INCICIO: {promo.dateSince}\nFECHA DE FINALIZACIÓN: {promo.dateUntil}\n")
                 print("+-----------------------------------------------------------------------------------------------------------+")
@@ -466,13 +516,11 @@ def promo_customer():
             while exist != True:
                 codShop = validateNum("!OPCION INVALIDA¡ Ingresar un codigo de local existente: ")
                 exist = verify_shop(codShop)
-            auxDate = input("fecha(dd-mm-aaaa): ")
-            promDate= datetime.strptime(auxDate, "%d-%m-%Y").date()
+            promDate= validateDate("Fecha(dd-mm-aaaa): ")
             today = date.today()
             while promDate < today:
                 print("!OPCION INVALIDA¡ Ingresar una fecha valida(dd-mm-aaaa): ")
-                auxDate = input("fecha(dd-mm-aaaa): ")
-                promDate= datetime.strptime(auxDate, "%d-%m-%Y").date()
+                promDate= validateDate("Fecha(dd-mm-aaaa): ")
             shopPromDate(codShop, promDate)
             aux = input("Ingrese * para salir o cualquier tecla para volver a ver: ")
             cleanWindow()
@@ -523,40 +571,43 @@ def approveProm():
     limProm = os.path.getsize(ffProm)
     lfProm.seek(0)
     if lfProm.tell() < limProm:
-        while lfProm.tell() < limProm:
-            promo = pickle.load(lfProm)
-            pun_shop = search_shop(promo.code)
-            lfShops.seek(pun_shop)
-            shop = pickle.load(lfShops)
-            if promo.status == "Pendiente".ljust(10," "):
-                print("+-----------------------------------------------------------------------------------------------------------+")
-                print(f"CODIGO DE PROMO: {promo.codPromo}\nDESCRIPCIÓN: {promo.textPromo}\nFECHA DE INCICIO: {promo.dateSince}\nFECHA DE FINALIZACIÓN: {promo.dateUntil}\nDÍAS DE DESCUENTO: \nLUNES:{promo.weekDay[0]} \nMARTES:{promo.weekDay[1]} \nMIERCOLES:{promo.weekDay[2]} \nJUEVES:{promo.weekDay[3]} \nVIERNES:{promo.weekDay[4]} \nSABADO:{promo.weekDay[5]} \nDOMINGO:{promo.weekDay[6]}  \nESTADO: {promo.status} \nCODIGO LOCAL:{promo.code} \nNOMBRE DEL LOCAL:{shop.name}")
-                print("+-----------------------------------------------------------------------------------------------------------+")
-        mod_prom = validateNum("Ingrese el codigo de la promo la cual quiere rechazar/aceptar o 0 para salir: ")
-        point_prom = search_prom(mod_prom,"Pendiente")
-        while (point_prom == -2 and  mod_prom != 0) or (point_prom == -3 and mod_prom != 0):
-            if point_prom == -2 and mod_prom != 0:
-                mod_prom = validateNum("El codigo de promo el cual usted esta ingresando no se encuentra en estado de 'pendiente', ingrese uno valido o '0' pasa salir: ")
-                point_prom = search_prom(mod_prom, "Pendiente")
-            elif point_prom == -3 and mod_prom != 0:
-                mod_prom = validateNum("El codigo de promo el cual usted esta ingresando no se encuentra en el sistema, ingrese uno valido o '0' pasa salir: ")
-                point_prom = search_prom(mod_prom, "Pendiente")
-        if mod_prom != 0 and point_prom != -2 and point_prom != -3 :
-            lfProm.seek(point_prom)
-            promo = pickle.load(lfProm)
-            auxStatus = input("Ingrese 'R' si no acepta la promo o 'A' si la acepta: ")
-            while auxStatus.lower() != "a" and auxStatus.lower() != "r":
-                auxStatus = input("Ingrese una de las opciones validas: ")
-            if auxStatus.lower() == "a":
-                promo.status = "Aprobada".ljust(10, " ")
-            if auxStatus.lower() == "r":
-                promo.status = "Rechazado".ljust(10, " ")
-            formatEntity("promo", promo)
-            lfProm.seek(point_prom,io.SEEK_SET)
-            pickle.dump(promo,lfProm)
-            lfProm.flush()
+        aux = " "
+        while aux != "*":
+            while lfProm.tell() < limProm:
+                promo = pickle.load(lfProm)
+                pun_shop = search_shop(promo.code)
+                lfShops.seek(pun_shop)
+                shop = pickle.load(lfShops)
+                if promo.status == "Pendiente".ljust(10," "):
+                    print("+-----------------------------------------------------------------------------------------------------------+")
+                    print(f"CODIGO DE PROMO: {promo.codPromo}\nDESCRIPCIÓN: {promo.textPromo}\nFECHA DE INCICIO: {promo.dateSince}\nFECHA DE FINALIZACIÓN: {promo.dateUntil}\nDÍAS DE DESCUENTO: \nLUNES:{promo.weekDay[0]} \nMARTES:{promo.weekDay[1]} \nMIERCOLES:{promo.weekDay[2]} \nJUEVES:{promo.weekDay[3]} \nVIERNES:{promo.weekDay[4]} \nSABADO:{promo.weekDay[5]} \nDOMINGO:{promo.weekDay[6]}  \nESTADO: {promo.status} \nCODIGO LOCAL:{promo.code} \nNOMBRE DEL LOCAL:{shop.name}")
+                    print("+-----------------------------------------------------------------------------------------------------------+")
+                mod_prom = validateNum("Ingrese el codigo de la promo la cual quiere rechazar/aceptar o 0 para salir: ")
+                point_prom = search_prom(mod_prom,"Pendiente")
+            while (point_prom == -2 and  mod_prom != 0) or (point_prom == -3 and mod_prom != 0):
+                if point_prom == -2 and mod_prom != 0:
+                    mod_prom = validateNum("El codigo de promo el cual usted esta ingresando no se encuentra en estado de 'pendiente', ingrese uno valido o '0' pasa salir: ")
+                    point_prom = search_prom(mod_prom, "Pendiente")
+                elif point_prom == -3 and mod_prom != 0:
+                    mod_prom = validateNum("El codigo de promo el cual usted esta ingresando no se encuentra en el sistema, ingrese uno valido o '0' pasa salir: ")
+                    point_prom = search_prom(mod_prom, "Pendiente")
+            if mod_prom != 0 and point_prom != -2 and point_prom != -3 :
+                lfProm.seek(point_prom)
+                promo = pickle.load(lfProm)
+                auxStatus = input("Ingrese 'R' si no acepta la promo o 'A' si la acepta: ")
+                while auxStatus.lower() != "a" and auxStatus.lower() != "r":
+                    auxStatus = input("Ingrese una de las opciones validas: ")
+                if auxStatus.lower() == "a":
+                    promo.status = "Aprobada".ljust(10, " ")
+                if auxStatus.lower() == "r":
+                    promo.status = "Rechazado".ljust(10, " ")
+                formatEntity("promo", promo)
+                lfProm.seek(point_prom,io.SEEK_SET)
+                pickle.dump(promo,lfProm)
+                lfProm.flush()
+            aux = input("Si desea salir presione * sino cualquier tecla para seguir revisando solicitudes de descuentos: ")
     else:
-        print("No hay promociones ene stado pendiente cargadas hasta el momento.")
+        print("No hay promociones en estado pendiente cargadas hasta el momento.")
 
 #Procedimiento que muestra el menu de administrador.
 def menu():
@@ -586,7 +637,7 @@ def menu():
                 news()
             case "5":
                 cleanWindow()
-                reportProm()
+                reportPromAd()
                 separation()
 
 #Procedimiento que muestra el menu para administrar las novedades
@@ -613,13 +664,9 @@ def shopsMenu():
     shop_menu="1"
     separation()
     while shop_menu != "0":        
-        print("\033[36m+---------------------+\033[0m")
-        print("\033[36m|\033[0m",categories[0].category[:15],":", categories[0].count,"\033[36m|\033[0m")
-        print("\033[36m+---------------------+\033[0m")
-        print("\033[36m|\033[0m",categories[1].category[:15],":", categories[1].count,"\033[36m|\033[0m")
-        print("\033[36m+---------------------+\033[0m")
-        print("\033[36m|\033[0m",categories[2].category[:15],":", categories[2].count,"\033[36m|\033[0m")
-        print("\033[36m+---------------------+\033[0m")
+        print("\033[36m+------------------------------------------------------------------+\033[0m")
+        print("\033[36m|\033[0m",categories[0].category[:15],":", categories[0].count,"\033[36m|\033[0m", "",categories[1].category[:15],":", categories[1].count,"\033[36m|\033[0m",categories[2].category[:15],":", categories[2].count,"\033[36m|\033[0m")
+        print("\033[36m+------------------------------------------------------------------+\033[0m")
         print("a) Crear locales \nb) Modificar local \nc) Eliminar local \nd) Mapa de locales \ne) Volver")
         shop_menu = input("\nIngrese sector de menu: ").lower()
         while shop_menu != "a" and shop_menu != "b" and shop_menu != "c" and shop_menu != "e" and shop_menu != "d":
@@ -754,11 +801,9 @@ def createShop():
             case "3":
                 modifyCategory("increment","Comida".ljust(50, " "))
                 shop.category ="Comida"
-        #try
         ownerShop = validateNum("Ingresar codigo del dueño del local: ")
         exist = validate_owner(ownerShop)
         while exist == False:
-            #try
             ownerShop = validateNum("Ingresar codigo del dueño del local: ")
             exist = validate_owner(ownerShop)
         shop.codUser = ownerShop
@@ -901,21 +946,22 @@ def modShop():
             if shop.status == "B":
                 current_status = input(f"\nEl local con codigo {shop.code} se encuentra en BAJA, debe activarlo para modificarlo, desea hacerlo? A: para si, * para no: ")
                 if(current_status.lower() == "a"):
-                    shop.code = "A"
+                    shop.status = "A"
+                    modifyCategory("increment", shop.category)
             if shop.status == "A":
                 print("\nEl codigo del local es valido y el local esta activado")
-                nameShop= input(f"\nEl nombre actual del local es '{shop.name}',ingrese el nuevo nombre o de caso contrario ingrese *: ").ljust(50,"a")
+                nameShop= input(f"\nEl nombre actual del local es '{shop.name}',ingrese el nuevo nombre o de caso contrario ingrese *: ").ljust(50," ")
                 if (nameShop != "*".ljust(50, " ")):
                     repeat = verifyName(nameShop)
                     while repeat:
                         print(f"El Nombre {nameShop} ya existe en los locales")
-                        nameShop = input(f"Ingresar el nuevo nombre del local: ").ljust(50, "a") 
+                        nameShop = input(f"Ingresar el nuevo nombre del local: ").ljust(50, " ") 
                         repeat = verifyName(nameShop)
                     shop.name = nameShop
-                new_location = input(f"\nLa ubicacion actual del local es '{shop.location}',ingrese la nueva localizacion o de caso contrario ingrese *: ").ljust(50, "a")
+                new_location = input(f"\nLa ubicacion actual del local es '{shop.location}',ingrese la nueva localizacion o de caso contrario ingrese *: ").ljust(50, " ")
                 if new_location != "*".ljust(50, " "):
                     shop.location = new_location 
-                new_category = input(f"\nEl rubro actual del local es '{shop.category}',ingrese * para mantenerlo o cualquier tecla para cambiarlo: ").ljust(50, "a")
+                new_category = input(f"\nEl rubro actual del local es '{shop.category}',ingrese * para mantenerlo o cualquier tecla para cambiarlo: ").ljust(50, " ")
                 if new_category  != "*".ljust(50, " "):
                     modifyCategory("decrement", shop.category)
                     print("\n1) Indumentaria \n2) Perfumeria \n3) Comida")
@@ -932,7 +978,7 @@ def modShop():
                         case "3":
                             modifyCategory("increment", "Comida".ljust(50, " "))
                             shop.category ="Comida"
-                new_owner = validateNum("\nEl dueño actual del local es {shop.codUser},ingrese el nuevo codigo de dueño o de caso contrario ingrese 0: ")
+                new_owner = validateNum(f"\nEl dueño actual del local es {shop.codUser},ingrese el nuevo codigo de dueño o de caso contrario ingrese 0: ")
                 if (new_owner != 0):
                     exist = validate_owner(new_owner)
                     while exist == False:
@@ -968,6 +1014,7 @@ def deleteShop():
                     auxDelete=input(f"Esta seguro que desea dar de BAJA al local con el codigo '{codShop}', presione B: para si, * para no: ")
                 if(auxDelete.lower() == "b"):
                     shop.status = "B"
+                    modifyCategory("decrement", shop.category)
                     print(f"El local con codigo '{codShop}' fue dado de BAJA")
             else:
                   print(f"El local con el codigo '{codShop}' ya esta dado de BAJA")
@@ -983,7 +1030,7 @@ def sing_up(typeUser):
     while flag == True:
         new_user = input("El mail que intenta registrar ya existe, ingrese otro: ").ljust(100, " ")
         flag = validate_user(new_user)
-    new_password = input("Ingrese la contraseña a registrar: ").ljust(8, " ")
+    new_password = getpass.getpass("Ingrese la contraseña a registrar: ").ljust(8, " ")
     user = Users()
     user.code = count_entity("user")
     user.user = new_user
@@ -1034,6 +1081,7 @@ def count_entity(typeEntity):
 inicialization()
 
 while(type_menu == ""):
+    cleanWindow()
     print("1) Ingresar como usuario registrado  \n2) Registrarse como cliente \n3) Salir")
     type_menu= input("Ingrese la manera con la cual quiere ingresar: ")
     while(type_menu != "1" and type_menu != "2" and type_menu != "3" and type_menu != "0"):

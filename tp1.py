@@ -50,18 +50,10 @@ class Categories:
 #Variables utilizadas globalmente en todo el programa.
 def openFiles():
     global ffUsers, lfUsers, ffShops, lfShops,lfProm, ffProm, lfUseP, ffUseP
-    ffUsers = "D:\\Gena\\TP1\\users.dat"
-    ffShops = "D:\\Gena\\TP1\\shops.dat"
-    ffProm = "D:\\Gena\\TP1\\promotions.dat"
-    ffUseP = "D:\\Gena\\TP1\\usePromo.dat"
-    # ffUsers = "C:\\Kevin\\TP1\\users.dat"
-    # ffShops = "C:\\Kevin\\TP1\\shops.dat"
-    # ffProm = "C:\\Kevin\\TP1\\promotions.dat"
-    # ffUseP = "C:\\Kevin\\TP1\\usePromo.dat"
-    # ffUsers = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\users.dat"
-    # ffProm = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\promotions.dat"
-    # ffShops = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\shops.dat"
-     # ffUseP = "C:\\Users\\nicop\\OneDrive\\Escritorio\\ALGORITMOS\\TP1\\usePromo.dat"
+    ffUsers = "C:\\tp3\\users.dat"
+    ffShops = "C:\\tp3\\shops.dat"
+    ffProm = "C:\\tp3\\promotions.dat"
+    ffUseP = "C:\\tp3\\usePromo.dat"
     lfUseP = open(ffUseP, "w+b")
     lfUsers = open(ffUsers, "w+b")
     lfProm = open(ffProm, "w+b")
@@ -85,7 +77,6 @@ def inicialization():
     formatEntity("user", user)
     pickle.dump(user,lfUsers)
     lfUsers.flush()
-    #---------------------------------------
     categories = [None]*3
     categories[0] = Categories()
     categories[0].category = "Indumentaria"[:50].ljust(50, " ")
@@ -96,64 +87,6 @@ def inicialization():
     categories[2] = Categories()
     categories[2].category = "Perfumeria"[:50].ljust(50, " ")
     categories[2].count =0
-    #---------------------------------------
-    user = Users()
-    user.code = 2
-    user.user = "dueño"
-    user.key = "123"
-    user.type = "dueño"
-    formatEntity("user", user)
-    pickle.dump(user,lfUsers)
-    lfUsers.flush()
-    #---------------------------------------
-    user.code = 3
-    user.user = "cliente"
-    user.key = "123"
-    user.type = "cliente"
-    formatEntity("user", user)
-    pickle.dump(user,lfUsers)
-    lfUsers.flush()
-    #---------------------------------------
-    shop.code=1
-    shop.name= "shop1"
-    shop.location= "rosario"
-    shop.category= "Indumentaria"
-    shop.codUser=2
-    shop.status= "A"
-    formatEntity("shop", shop)
-    pickle.dump(shop,lfShops)
-    lfShops.flush()
-    shop.code=2
-    shop.name= "shop2"
-    shop.location= "reconquista"
-    shop.category= "Comida"
-    shop.codUser=2
-    shop.status= "A"
-    formatEntity("shop", shop)
-    pickle.dump(shop,lfShops)
-    lfShops.flush()
-    #---------------------------------------
-    promo.codPromo= 1
-    promo.textPromo= "20% descuento papu"
-    promo.dateSince= datetime.strptime("28-09-2023", "%d-%m-%Y").date()
-    promo.dateUntil= datetime.strptime("28-10-2023", "%d-%m-%Y").date()
-    promo.weekDay= [1,1,1,1,1,1,1]
-    promo.status= "Aprobada"
-    promo.code= 1
-    formatEntity("promo", promo)
-    pickle.dump(promo,lfProm)
-    lfProm.flush()
-    promo.codPromo= 2
-    promo.textPromo= "80% descuento papu"
-    promo.dateSince= datetime.strptime("28-09-2023", "%d-%m-%Y").date()
-    promo.dateUntil= datetime.strptime("28-10-2023", "%d-%m-%Y").date()
-    promo.weekDay= [1,1,1,1,1,1,1]
-    promo.status= "Aprobada"
-    promo.code= 2
-    formatEntity("promo", promo)
-    pickle.dump(promo,lfProm)
-    lfProm.flush()
-    #---------------------------------------
     totalShops = 0
     count = 3
     code = 0
@@ -215,7 +148,6 @@ def validation(typeUser):
     cleanWindow()
     count = 3
     while (count > 0): 
-        current_menu(typeUser)
         user_vd = input("Ingrese su usuario: ").ljust(100, " ")
         password_vd = getpass.getpass("Ingrese su contraseña: ").ljust(8, " ")
         flag = validate_user(user_vd)   
@@ -245,15 +177,6 @@ def validation(typeUser):
                 print(f"\nEl usuario o contraseña son incorrectos le quedan {count} intentos.\n")
                 separation()                     
                 
-#Procedimeinto para mostrar el perfil que se esta utilizando en ese momento
-def current_menu(typeUser):
-    if(typeUser == "1"):
-        print("> MENU ADMINISTRADOR <")
-    if(typeUser == "2"):
-        print("> MENU DUEÑO LOCAL <")
-    if(typeUser == "3"):
-        print("> MENU CLIENTE <")
-                
 #Procedimiento para mostrar menu de cliente
 def menu_customer():
     global opcion_customer
@@ -271,11 +194,13 @@ def menu_customer():
             case "1":
                 cleanWindow()
                 promo_customer()
+                cleanWindow()
                 separation()
             case "2":
                 cleanWindow()
                 request_prom()
                 separation()
+                cleanWindow()
             case "3":
                 cleanWindow()
                 print("Diagramado en Chapin...")
@@ -289,7 +214,17 @@ def verifyCode(codeShop,userCode):
         shop = pickle.load(lfShops)
         if (shop.codUser == userCode and shop.code == codeShop and shop.status == "A"):
             flag = True
-    return flag         
+    return flag
+
+def verifyProm(codeProm):
+    flag = False
+    limProm = os.path.getsize(ffProm)
+    lfProm.seek(0)
+    while lfProm.tell() < limProm and flag == False:
+        promo = pickle.load(lfProm)
+        if (promo.codPromo == codeProm):
+            flag = True
+    return flag               
 
 def showProm(point):
     global ffProm,lfProm, promo, lfUsers,ffUsers
@@ -360,11 +295,13 @@ def createProm():
         formatEntity("promo", promo)
         pickle.dump(promo,lfProm)
         lfProm.flush()
+        cleanWindow()
         descrption = input(f"Si desea crear otra promocion ingrese su descipción o * para culminar: ").ljust(20, " ")
     
 #Procedimeinto que muestra el menu para dueño de local
 def menu_owner():
     global opcion_owner
+    cleanWindow()
     while opcion_owner != "0" and opcion_owner != "d":
         print("\n1) Crear descuento \n2) Reporte de uso de descuento\n3) Ver novedades \n0) Salir")
         opcion_owner = input("\nIngrese sector de menu: ").lower()
@@ -378,10 +315,12 @@ def menu_owner():
             case "1":
                 cleanWindow()
                 createProm()
+                cleanWindow()
                 separation()
             case "2":
                 cleanWindow()
                 reportPromDu()
+                cleanWindow()
                 separation()
             case "3":
                 cleanWindow()
@@ -421,7 +360,7 @@ def reportPromDu():
         user = pickle.load(lfUsers)
         while lfShops.tell() < limShop:
             shop = pickle.load(lfShops)
-            if shop.codUser == user.code:
+            if shop.codUser == user.code and promo.status == "Aprobada".ljust(10," "):
                 limProm = os.path.getsize(ffProm)
                 lfProm.seek(0)
                 print("+-----------------------------------------------------------------------------------------------------------+")
@@ -480,6 +419,7 @@ def reportPromAd():
                     print("+-----------------------------------------------------------------------------------------------------------+")
                     print(f"CODIGO DE PROMO: {promo.codPromo}\nDESCRIPCIÓN: {promo.textPromo}\nFECHA DE INCICIO: {promo.dateSince}\nFECHA DE FINALIZACIÓN: {promo.dateUntil}\nDÍAS DE DESCUENTO: \nLUNES:{promo.weekDay[0]} \nMARTES:{promo.weekDay[1]} \nMIERCOLES:{promo.weekDay[2]} \nJUEVES:{promo.weekDay[3]} \nVIERNES:{promo.weekDay[4]} \nSABADO:{promo.weekDay[5]} \nDOMINGO:{promo.weekDay[6]}  \nESTADO: {promo.status} \nCODIGO LOCAL:{promo.code} \nNOMBRE DEL LOCAL:{shop.name} \nCANTIDAD DE USOS DE ESTA PROMO: {countUse} ")
                     print("+-----------------------------------------------------------------------------------------------------------+")
+        cleanWindow()
         aux = input("Si desea volver ingrese * sino ingrese cualquier tecla: ")
     cleanWindow()
 
@@ -530,6 +470,13 @@ def request_prom():
     user = Users()
     useP = usePromo()
     codProm = validateNum("Ingrese el codigo de la promocion que quiere usar o 0 para salir: ")
+    codFlag = verifyProm(codProm)
+    while codFlag == False: 
+        codProm = validateNum("El codigo de la promocion no existe, ingrese otro codigo o 0 para salir: ")
+        if codProm != 0:
+            codFlag = verifyProm(codProm)
+        else:
+            codFlag = True
     while codProm != 0:
         point_prom = search_prom(codProm,"Aprobada")
         while (point_prom == -2 and  codProm != 0) or (point_prom == -3 and codProm != 0):
@@ -582,8 +529,8 @@ def approveProm():
                     print("+-----------------------------------------------------------------------------------------------------------+")
                     print(f"CODIGO DE PROMO: {promo.codPromo}\nDESCRIPCIÓN: {promo.textPromo}\nFECHA DE INCICIO: {promo.dateSince}\nFECHA DE FINALIZACIÓN: {promo.dateUntil}\nDÍAS DE DESCUENTO: \nLUNES:{promo.weekDay[0]} \nMARTES:{promo.weekDay[1]} \nMIERCOLES:{promo.weekDay[2]} \nJUEVES:{promo.weekDay[3]} \nVIERNES:{promo.weekDay[4]} \nSABADO:{promo.weekDay[5]} \nDOMINGO:{promo.weekDay[6]}  \nESTADO: {promo.status} \nCODIGO LOCAL:{promo.code} \nNOMBRE DEL LOCAL:{shop.name}")
                     print("+-----------------------------------------------------------------------------------------------------------+")
-                mod_prom = validateNum("Ingrese el codigo de la promo la cual quiere rechazar/aceptar o 0 para salir: ")
-                point_prom = search_prom(mod_prom,"Pendiente")
+            mod_prom = validateNum("Ingrese el codigo de la promo la cual quiere rechazar/aceptar o 0 para salir: ")
+            point_prom = search_prom(mod_prom,"Pendiente")
             while (point_prom == -2 and  mod_prom != 0) or (point_prom == -3 and mod_prom != 0):
                 if point_prom == -2 and mod_prom != 0:
                     mod_prom = validateNum("El codigo de promo el cual usted esta ingresando no se encuentra en estado de 'pendiente', ingrese uno valido o '0' pasa salir: ")
@@ -605,6 +552,7 @@ def approveProm():
                 lfProm.seek(point_prom,io.SEEK_SET)
                 pickle.dump(promo,lfProm)
                 lfProm.flush()
+                cleanWindow()
             aux = input("Si desea salir presione * sino cualquier tecla para seguir revisando solicitudes de descuentos: ")
     else:
         print("No hay promociones en estado pendiente cargadas hasta el momento.")
@@ -624,13 +572,16 @@ def menu():
             case "1":
                 cleanWindow()
                 shopsMenu()
+                cleanWindow()
             case "2":
                 cleanWindow()
                 sing_up("dueño")
+                cleanWindow()
                 separation()
             case "3":
                 cleanWindow()
                 approveProm()
+                cleanWindow()
                 separation()
             case "4":
                 cleanWindow()
@@ -638,14 +589,12 @@ def menu():
             case "5":
                 cleanWindow()
                 reportPromAd()
+                cleanWindow()
                 separation()
 
 #Procedimiento que muestra el menu para administrar las novedades
 def news():
     global menu_admin
-    separation()
-    print(">GESTION DE NOVEDADES<")
-    separation()
     print("\na) Crear novedades \nb) Modificar novedad \nc) Eliminar novedad \nd) Ver reporte de novedades \ne) Volver")
     aux = input("\nIngrese sector de menu: ").lower()
     while aux != "a" and aux != "b" and aux != "c" and aux != "d" and aux != "e":
@@ -993,6 +942,7 @@ def modShop():
                 sort_shops()
                 showShops()
                 sortForCategories()
+        cleanWindow()
         codShop = validateNum("Ingrese el codigo del local que quiere modificar o 0 para culminar: ")
     
 def deleteShop():
